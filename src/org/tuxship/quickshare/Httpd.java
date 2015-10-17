@@ -3,6 +3,12 @@ package org.tuxship.quickshare;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -61,44 +67,42 @@ public class Httpd extends Service
 
 	    @Override
 	    public Response serve(IHTTPSession session) {
-	        String msg = "<html><body><h1>Hello server</h1>\n";
+	    	Log.i("quickshare", "SERVING A REQUEST");
 	        Map<String, String> parms = session.getParms();
-	        if (parms.get("username") == null) {
-	            msg += "<form action='?' method='get'>\n  <p>Your name: <input type='text' name='username'></p>\n" + "</form>\n";
+
+	        WebContent content = new WebContent(getApplication().getApplicationContext());
+	        
+	        String page = "<!DOCTYPE html><html><head>";
+	        page += content.getStyles();
+	        page += "</head><body>";
+	        
+	        /*
+		     * Header
+		     */
+	        page += content.getHeader();
+	        
+	        page += "<div id=\"content\">";
+	        
+		    /*
+		     * Login Prompt // Data Listing
+		     */
+	        if (parms.get("accessToken") == null) {
+	            page += "<form action='?' method='get'>\n"
+	            		+ "<p>Your Token: <input type='text' name='accessToken'><input type='submit' value='submit'></p>\n" + "</form>\n";
 	        } else {
-	            msg += "<p>Hello, " + parms.get("username") + "!</p>";
+	            page += "<p>Hello, here are your files (Token: " + parms.get("accessToken") + " )</p>";
 	        }
-	        return newFixedLengthResponse( msg + "</body></html>\n" );
+	        
+	        page += "</div>";
+
+	        
+		    /*
+		     * Footer
+		     */
+	        page += content.getFooter();
+	        
+	        return newFixedLengthResponse( page + "</body></html>\n" );
 	    }
-	    
-//	    @Override
-//	    public Response serve(String uri, Method method, 
-//	                          Map<String, String> header,
-//	                          Map<String, String> parameters,
-//	                          Map<String, String> files) {
-//	    	
-//	    	long totalBytes = 0;
-//	    	FileInputStream stream;
-//	        
-//	    	try {
-//	            // Open file from SD Card
-//	            File root = Environment.getExternalStorageDirectory();
-//	            String fileName = root.getAbsolutePath() + "/www/index.html";
-//	            
-//	            stream = new FileInputStream(fileName);
-//	            totalBytes = new File(fileName).length();
-//	        } catch(IOException ioe) {
-//	            Log.w("Httpd", ioe.toString());
-//	        }
-	//
-//	        
-//	        NanoHTTPD.Response res = new NanoHTTPD.Response(Response.Status.OK, 
-//	        		"text/html", stream, totalBytes);
-//	        res.addHeader("Content-Disposition: attachment; filename=", fileName); 
-//	        return res;
-//	    }
-
-
 	}
     
 }

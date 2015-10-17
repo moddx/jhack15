@@ -4,5 +4,8 @@
     <string name="app_name">QuickShare</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_create_share">Create Share</string>
+    <string name="enter_share_name">Enter share name:</string>
+    <string name="share_name">share name</string>
 
 </resources>

@@ -15,7 +15,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 public class ShareOverviewActivity extends Activity {
 
@@ -67,8 +70,15 @@ public class ShareOverviewActivity extends Activity {
 				 */
 				ArrayList<String> shares = (ArrayList<String>) dbService.getShares();
 				
+				int idIndex = 0;
 				for(String share : shares) {
+					TableRow row = new TableRow(getApplicationContext());
+					TextView nameView = new TextView(getApplicationContext());
+					nameView.setText(share);
+					row.addView(nameView);
 					
+					CheckBox chckBx = new CheckBox(getApplicationContext());
+					row.addView(chckBx);
 				}
 			}
 		}

@@ -86,8 +86,8 @@ public class CreateShareActivity extends Activity {
 				 */
 				
 				Intent intent = new Intent(getParent(), ShareActivity.class);
-				intent.putExtra("sharename", shareName);
-				intent.putExtra("sharetoken", token);
+				intent.putExtra(ShareActivity.EXTRA_SHARE, shareName);
+				intent.putExtra(ShareActivity.EXTRA_TOKEN, token);
 				startActivity(intent);
 			}
 		});

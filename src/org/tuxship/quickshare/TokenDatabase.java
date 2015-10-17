@@ -27,7 +27,7 @@ public class TokenDatabase {
 		this.context = context;
 	}
 
-	private String ip_wifi(){
+	public String ip_wifi(){
 
 		WifiManager manager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
 		WifiInfo info=manager.getConnectionInfo();

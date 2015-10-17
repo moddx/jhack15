@@ -29,8 +29,10 @@ public class ShareActivity extends Activity {
 		 * Start web server
 		 */
 		startService(new Intent(this, Httpd.class));
-
+		
+		TokenDatabase tdb=new TokenDatabase(getApplicationContext());
 		TextView text = (TextView) findViewById(R.id.hello_world);
+		text.setText(tdb.ip_wifi());
 	}
 
 	@Override

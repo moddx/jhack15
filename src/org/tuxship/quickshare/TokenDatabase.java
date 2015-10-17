@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -30,7 +31,7 @@ public class TokenDatabase {
 		String token=createKey(jarray);
 		addtoJSON(jobj, name, token, jarray);
 		saveJSON(jobj);
-		
+
 		return token;
 	}
 
@@ -40,6 +41,24 @@ public class TokenDatabase {
 		} else {
 			return false;
 		}
+	}
+
+	public List<String> getShares(JSONObject obj){
+		ArrayList<String> list = new ArrayList<String>();
+
+		try {
+			JSONArray db=obj.getJSONArray("db");
+			JSONObject curobj;
+
+			for(int i = 0; i < db.length(); i++){
+				curobj=(JSONObject) db.get(i);
+				list.add((String) curobj.get("name"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}		
+
+		return list;
 	}
 
 

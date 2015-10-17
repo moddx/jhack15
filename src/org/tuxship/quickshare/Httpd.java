@@ -61,44 +61,37 @@ public class Httpd extends Service
 
 	    @Override
 	    public Response serve(IHTTPSession session) {
-	        String msg = "<html><body><h1>Hello server</h1>\n";
+	    	Log.i("quickshare", "SERVING A REQUEST");
 	        Map<String, String> parms = session.getParms();
+
+	        WebContent content = new WebContent(getApplication().getApplicationContext());
+	        String page = "<!DOCTYPE html><html><head>";
+	        page += content.getStyles();
+	        page += "</head><body>";
+	        
+	        /*
+		     * Header
+		     */
+	        page += content.getHeader();
+	        
+	        
+		    /*
+		     * Login Prompt // Data Listing
+		     */
 	        if (parms.get("username") == null) {
-	            msg += "<form action='?' method='get'>\n  <p>Your name: <input type='text' name='username'></p>\n" + "</form>\n";
+	            page += "<form action='?' method='get'>\n  <p>Your Token: <input type='text' name='accessToken'></p>\n" + "</form>\n";
 	        } else {
-	            msg += "<p>Hello, " + parms.get("username") + "!</p>";
+	            page += "<p>Hello, " + parms.get("accessToken") + "!</p>";
 	        }
-	        return newFixedLengthResponse( msg + "</body></html>\n" );
+	        
+	        
+		    /*
+		     * Footer
+		     */
+	        page += content.getFooter();
+	        
+	        return newFixedLengthResponse( page + "</body></html>\n" );
 	    }
-	    
-//	    @Override
-//	    public Response serve(String uri, Method method, 
-//	                          Map<String, String> header,
-//	                          Map<String, String> parameters,
-//	                          Map<String, String> files) {
-//	    	
-//	    	long totalBytes = 0;
-//	    	FileInputStream stream;
-//	        
-//	    	try {
-//	            // Open file from SD Card
-//	            File root = Environment.getExternalStorageDirectory();
-//	            String fileName = root.getAbsolutePath() + "/www/index.html";
-//	            
-//	            stream = new FileInputStream(fileName);
-//	            totalBytes = new File(fileName).length();
-//	        } catch(IOException ioe) {
-//	            Log.w("Httpd", ioe.toString());
-//	        }
-	//
-//	        
-//	        NanoHTTPD.Response res = new NanoHTTPD.Response(Response.Status.OK, 
-//	        		"text/html", stream, totalBytes);
-//	        res.addHeader("Content-Disposition: attachment; filename=", fileName); 
-//	        return res;
-//	    }
-
-
 	}
     
 }

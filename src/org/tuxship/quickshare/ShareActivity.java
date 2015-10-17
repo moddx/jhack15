@@ -1,9 +1,15 @@
 package org.tuxship.quickshare;
 
+//import org.json.simple.JSONObject;
+import org.json.JSONObject;
+import org.json.JSONException;
+
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class ShareActivity extends Activity {
 
@@ -11,6 +17,22 @@ public class ShareActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
+		
+      JSONObject obj = new JSONObject();
+      try{
+    	  obj.put("name", 1111);
+    	  
+      }catch(JSONException e){
+    	  e.printStackTrace();
+      }
+      
+      
+      TextView text = (TextView) findViewById(R.id.hello_world);
+      try{
+    	  text.setText(obj.getString("name"));
+      }catch(JSONException e){
+    	  e.printStackTrace();
+      }
 	}
 
 	@Override

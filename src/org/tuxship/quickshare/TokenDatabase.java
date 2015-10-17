@@ -4,13 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -18,22 +13,41 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.util.Log;
 
 public class TokenDatabase {
 	public String FILENAME = "token_database";
 
-	private Context context;
-	
 	private final int tokenLength = 6;
+	Context context;
 	
 	public TokenDatabase(Context context) {
 		this.context = context;
 	}
 	
-	public String createKey(JSONArray files) {
+	public String addShare(String name, ArrayList<String> files) {
+		/*
+		 * Create token
+		 */
+		String token = "";
+		
+		/*
+		 * Store files and sharename with token
+		 */
+		
+		return token;
+	}
+	
+	public boolean deleteShare(String name) {
+		/*
+		 * Delete json stuff and return success
+		 */
+		
+		
+		return false;
+	}
+	
+	
+	private String createKey(JSONArray files) {
 		String str=files.toString();
 
 		StringBuffer result = new StringBuffer();
@@ -60,49 +74,7 @@ public class TokenDatabase {
 		return result.substring(result.length() - tokenLength);
 	}
 	
-	
-	public String ip_wifi(){
-
-		WifiManager manager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-		WifiInfo info=manager.getConnectionInfo();
-		int ipAddress=info.getIpAddress();
-
-		if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
-			ipAddress = Integer.reverseBytes(ipAddress);
-		}
-
-		byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
-
-		String ipAddressString;
-		try {
-			ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
-		} catch (UnknownHostException ex) {
-			Log.e("WIFIIP", "Unable to get host address.");
-			ipAddressString = null;
-		}
-
-		return ipAddressString;
-	}
-	
-	public List<String> getShares(JSONObject obj){
-		ArrayList<String> list = new ArrayList<String>();
-		
-		try {
-			JSONArray db=obj.getJSONArray("db");
-			JSONObject curobj;
-		
-			for(int i = 0; i < db.length(); i++){
-				curobj=(JSONObject) db.get(i);
-				list.add((String) curobj.get("name"));
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}		
-		
-		return list;
-	}
-	
-	public void addtoJSON(JSONObject obj,String key, String name,JSONArray files){
+	private void addtoJSON(JSONObject obj,String key,JSONArray files){
 		try{
 			JSONArray db;
 			if(!obj.has("db")){//check if top level array exists
@@ -114,7 +86,6 @@ public class TokenDatabase {
 			
 			JSONObject input=new JSONObject();
 			input.put("key",key);
-			input.put("name", name);
 			input.put("files",files);
 			db.put(input);
 			obj.put("db", db);			
@@ -124,7 +95,7 @@ public class TokenDatabase {
 		} 
 	}
 	
-	public void removefromJSON(JSONObject obj,String sname){
+	private void removefromJSON(JSONObject obj,String sname){
 //		try{
 			obj.remove(sname);
 			
@@ -134,7 +105,7 @@ public class TokenDatabase {
 	}
 	
 	
-	public void saveJSON(JSONObject obj){
+	private void saveJSON(JSONObject obj){
 
 		try{
 			FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
@@ -153,7 +124,7 @@ public class TokenDatabase {
 
 	}
 
-	public JSONObject loadJSON(){
+	private JSONObject loadJSON(){
 		String result = "";
 		JSONObject out=new JSONObject();
 		try{

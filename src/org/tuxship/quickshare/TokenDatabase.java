@@ -43,7 +43,8 @@ public class TokenDatabase {
 		}
 	}
 
-	public List<String> getShares(JSONObject obj){
+	public List<String> getShares(){
+		JSONObject obj=loadJSON();
 		ArrayList<String> list = new ArrayList<String>();
 
 		try {

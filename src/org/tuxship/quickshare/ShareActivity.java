@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class ShareActivity extends Activity {
@@ -35,6 +36,9 @@ public class ShareActivity extends Activity {
 		
 		TextView link = (TextView)findViewById(R.id.remote_link);
 		link.setText("http://" + getWifiIP() + ":8080");
+		
+		Button shares_button = (Button)findViewById(R.id.allshares);
+		shares_button.setText("All shares");
 		
 //		Intent webIntent = new Intent();
 //		webIntent.setAction("org.tuxship.STARTHTTPD");

@@ -1,6 +1,7 @@
 package org.tuxship.quickshare;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,13 @@ public class ShareActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
+		
+//		Intent webIntent = new Intent();
+//		webIntent.setAction("org.tuxship.STARTHTTPD");
+//		
+//		startService(webIntent);
+		
+		startService(new Intent(this, Httpd.class));
 	}
 
 	@Override

@@ -33,6 +33,9 @@ public class ShareActivity extends Activity {
 		Intent shareNameIntent = getIntent();
 		shareName = shareNameIntent.getStringExtra("sharename");
 		
+		TextView link = (TextView)findViewById(R.id.remote_link);
+		link.setText("http://" + getWifiIP() + ":8080");
+		
 //		Intent webIntent = new Intent();
 //		webIntent.setAction("org.tuxship.STARTHTTPD");
 //		

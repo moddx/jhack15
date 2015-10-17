@@ -7,5 +7,6 @@
     <string name="title_activity_create_share">Create Share</string>
     <string name="enter_share_name">Enter share name:</string>
     <string name="share_name">share name</string>
+    <string name="title_activity_share_overview">Your Shares</string>
 
 </resources>

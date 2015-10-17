@@ -12,17 +12,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
 
-public class TokenDatabase {
+public class TokenDatabase extends Service {
 	public String FILENAME = "token_database";
 
 	private final int tokenLength = 6;
-	Context context;
+
+	// Binder given to clients
+    private final IBinder binder = new LocalBinder();
 	
-	public TokenDatabase(Context context) {
-		this.context = context;
-	}
+//	Context context;
+	
+//	public TokenDatabase(Context context) {
+//		this.context = context;
+//	}
 	
 	public String addShare(String name, ArrayList<String> files) {
 		/*
@@ -108,7 +116,7 @@ public class TokenDatabase {
 	private void saveJSON(JSONObject obj){
 
 		try{
-			FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			FileOutputStream fos = getApplication().getApplicationContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
 			try{
 
 				fos.write(obj.toString().getBytes());
@@ -128,7 +136,7 @@ public class TokenDatabase {
 		String result = "";
 		JSONObject out=new JSONObject();
 		try{
-			FileInputStream fis = context.openFileInput(FILENAME);
+			FileInputStream fis = getApplication().getApplicationContext().openFileInput(FILENAME);
 			Scanner scan = new Scanner(fis);
 			while(scan.hasNext()) {
 				result += scan.next();
@@ -147,4 +155,15 @@ public class TokenDatabase {
 		return out;
 	}
 
+	@Override
+	public IBinder onBind(Intent intent) {
+		return binder;
+	}
+
+	
+	public class LocalBinder extends Binder {
+		TokenDatabase getService() {
+			return TokenDatabase.this;
+		}
+	}
 }

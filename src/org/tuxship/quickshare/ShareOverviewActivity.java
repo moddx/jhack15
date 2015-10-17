@@ -7,6 +7,7 @@ import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -32,6 +33,11 @@ public class ShareOverviewActivity extends Activity {
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
 		}
+		
+		/*
+		 * Start web server
+		 */
+		startService(new Intent(this, Httpd.class));
 	}
 
 	@Override

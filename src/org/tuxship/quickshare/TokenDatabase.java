@@ -4,13 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteOrder;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -18,9 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.util.Log;
 
 public class TokenDatabase {
 	public String FILENAME = "token_database";
@@ -32,7 +24,30 @@ public class TokenDatabase {
 		this.context = context;
 	}
 	
-	public String createKey(JSONArray files) {
+	public String addShare(String name, ArrayList<String> files) {
+		/*
+		 * Create token
+		 */
+		String token = "";
+		
+		/*
+		 * Store files and sharename with token
+		 */
+		
+		return token;
+	}
+	
+	public boolean deleteShare(String name) {
+		/*
+		 * Delete json stuff and return success
+		 */
+		
+		
+		return false;
+	}
+	
+	
+	private String createKey(JSONArray files) {
 		String str=files.toString();
 
 		StringBuffer result = new StringBuffer();
@@ -59,7 +74,7 @@ public class TokenDatabase {
 		return result.substring(result.length() - tokenLength);
 	}
 	
-	public void addtoJSON(JSONObject obj,String key,JSONArray files){
+	private void addtoJSON(JSONObject obj,String key,JSONArray files){
 		try{
 			JSONArray db;
 			if(!obj.has("db")){//check if top level array exists
@@ -80,7 +95,7 @@ public class TokenDatabase {
 		} 
 	}
 	
-	public void removefromJSON(JSONObject obj,String sname){
+	private void removefromJSON(JSONObject obj,String sname){
 //		try{
 			obj.remove(sname);
 			
@@ -90,7 +105,7 @@ public class TokenDatabase {
 	}
 	
 	
-	public void saveJSON(JSONObject obj){
+	private void saveJSON(JSONObject obj){
 
 		try{
 			FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
@@ -109,7 +124,7 @@ public class TokenDatabase {
 
 	}
 
-	public JSONObject loadJSON(){
+	private JSONObject loadJSON(){
 		String result = "";
 		JSONObject out=new JSONObject();
 		try{

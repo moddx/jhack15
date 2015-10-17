@@ -1,5 +1,7 @@
 package org.tuxship.quickshare;
 
+import java.util.ArrayList;
+
 import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
@@ -63,7 +65,11 @@ public class ShareOverviewActivity extends Activity {
 				/*
 				 * for all the shares..
 				 */
+				ArrayList<String> shares = dbService.getShares();
 				
+				for(String share : shares) {
+					
+				}
 			}
 		}
 		

@@ -1,6 +1,7 @@
 package org.tuxship.quickshare;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,7 +44,7 @@ public class CreateShareActivity extends Activity {
 	
 	private void setup() {
 		submitBtn = (Button)findViewById(R.id.submitBtn);
-		shareNameInput = (EditText)findViewById(R.id.shareNameInput);s
+		shareNameInput = (EditText)findViewById(R.id.shareNameInput);
 		
 		submitBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -53,12 +54,13 @@ public class CreateShareActivity extends Activity {
 				if(input.equals(""))
 					return;
 				
-				TokenDatabase dao = TokenDatabase.getInstance();
-				
 				/*
-				 * TODO Save in database
+				 * TODO Save in database and launch ShareActivity
 				 */
 				
+				Intent intent = new Intent(getParent(), ShareActivity.class);
+				intent.putExtra("sharename", input);
+				startActivity(intent);
 			}
 		});
 	}

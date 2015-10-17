@@ -25,9 +25,8 @@ import android.util.Log;
 public class TokenDatabase {
 	public String FILENAME = "token_database";
 
-	private Context context;
-	
 	private final int tokenLength = 6;
+	Context context;
 	
 	public TokenDatabase(Context context) {
 		this.context = context;
@@ -59,31 +58,6 @@ public class TokenDatabase {
 		
 		return result.substring(result.length() - tokenLength);
 	}
-	
-	
-	public String ip_wifi(){
-
-		WifiManager manager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-		WifiInfo info=manager.getConnectionInfo();
-		int ipAddress=info.getIpAddress();
-
-		if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
-			ipAddress = Integer.reverseBytes(ipAddress);
-		}
-
-		byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
-
-		String ipAddressString;
-		try {
-			ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
-		} catch (UnknownHostException ex) {
-			Log.e("WIFIIP", "Unable to get host address.");
-			ipAddressString = null;
-		}
-
-		return ipAddressString;
-	}
-	
 	
 	public void addtoJSON(JSONObject obj,String key,JSONArray files){
 		try{

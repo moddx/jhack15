@@ -46,8 +46,16 @@ public class ShareActivity extends Activity {
 		shareName = shareNameIntent.getStringExtra(EXTRA_SHARE);
 		token = shareNameIntent.getStringExtra(EXTRA_TOKEN);
 		
+		TextView sharenametext = (TextView)findViewById(R.id.sharename);
+		sharenametext.setText(shareName);
+		
+		
 		TextView link = (TextView)findViewById(R.id.remote_link);
 		link.setText("http://" + getWifiIP() + ":8080");
+		
+		
+		TextView tokentext = (TextView)findViewById(R.id.sharetoken);
+		tokentext.setText(token);
 		
 		Button shares_button = (Button)findViewById(R.id.allshares);
 		shares_button.setText("All shares");

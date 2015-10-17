@@ -1,12 +1,19 @@
 package org.tuxship.quickshare;
 
+
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class ShareActivity extends Activity {
+
+	
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +25,12 @@ public class ShareActivity extends Activity {
 //		
 //		startService(webIntent);
 		
+		/*
+		 * Start web server
+		 */
 		startService(new Intent(this, Httpd.class));
+
+		TextView text = (TextView) findViewById(R.id.hello_world);
 	}
 
 	@Override

@@ -1,8 +1,16 @@
 package org.tuxship.quickshare;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.tuxship.quickshare.TokenDatabase.LocalBinder;
+
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,14 +19,24 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class CreateShareActivity extends Activity {
+	
+	public static final String EXTRA_FILES = "filesToShare";
 
 	Button submitBtn;
 	EditText shareNameInput; 
+	
+	TokenDatabase dbService;
+	boolean dbBound = false;
+	
+	String[] files;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_share);
+		
+		Intent shareIntent = getIntent();
+		files = shareIntent.getStringArrayExtra(EXTRA_FILES);
 		
 		setup();
 	}
@@ -49,19 +67,46 @@ public class CreateShareActivity extends Activity {
 		submitBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String input = shareNameInput.getText().toString();
+				String shareName = shareNameInput.getText().toString();
 				
-				if(input.equals(""))
+				if(shareName.equals(""))
 					return;
 				
 				/*
-				 * TODO Save in database and launch ShareActivity
+				 * Store in database
+				 */
+				String token = "";
+				if(dbBound && files != null) {
+					token = dbService.addShare(shareName, Arrays.asList(files));
+				}
+				
+				
+				/*  
+				 *  Launch ShareActivity
 				 */
 				
 				Intent intent = new Intent(getParent(), ShareActivity.class);
-				intent.putExtra("sharename", input);
+				intent.putExtra("sharename", shareName);
+				intent.putExtra("sharetoken", token);
 				startActivity(intent);
 			}
 		});
 	}
+	
+	/** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to the TokenDatabase, cast the IBinder and get TokenDatabase instance
+            LocalBinder binder = (LocalBinder) service;
+            dbService = binder.getService();
+            dbBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            dbBound = false;
+        }
+    };
 }

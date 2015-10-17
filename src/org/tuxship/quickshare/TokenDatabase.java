@@ -23,13 +23,12 @@ public class TokenDatabase extends Service {
 	public String FILENAME = "token_database";
 
 	private final int tokenLength = 6;
-	Context context;
 
 	// Binder given to clients
     private final IBinder binder = new LocalBinder();
-	}
+    
 
-	public String addShare(String name, ArrayList<String> files) {
+	public String addShare(String name, List<String> files) {
 		JSONArray jarray = new JSONArray(files);
 		JSONObject jobj=loadJSON();
 		String token=createKey(jarray);

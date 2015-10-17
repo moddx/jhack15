@@ -65,7 +65,7 @@ public class ShareOverviewActivity extends Activity {
 				/*
 				 * for all the shares..
 				 */
-				ArrayList<String> shares = dbService.getShares();
+				ArrayList<String> shares = (ArrayList<String>) dbService.getShares();
 				
 				for(String share : shares) {
 					

@@ -26,9 +26,9 @@ public final class R {
     }
     public static final class id {
         public static final int action_settings=0x7f080006;
+        public static final int allshares=0x7f080004;
         public static final int captionText=0x7f080000;
         public static final int container=0x7f080005;
-        public static final int filelist=0x7f080004;
         public static final int remote_link=0x7f080003;
         public static final int shareNameInput=0x7f080001;
         public static final int submitBtn=0x7f080002;

@@ -9,13 +9,17 @@ import java.nio.ByteOrder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +29,9 @@ import android.widget.TextView;
 public class ShareActivity extends Activity {
 
 	String shareName;
+	
+	TokenDatabase dbService;
+	boolean dbBound = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +46,12 @@ public class ShareActivity extends Activity {
 		
 		Button shares_button = (Button)findViewById(R.id.allshares);
 		shares_button.setText("All shares");
+		
+		if(dbBound) {
+			/*
+			 * Add database access stuff here
+			 */
+		}
 		
 //		Intent webIntent = new Intent();
 //		webIntent.setAction("org.tuxship.STARTHTTPD");
@@ -92,4 +105,21 @@ public class ShareActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	/** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to the TokenDatabase, cast the IBinder and get TokenDatabase instance
+            LocalBinder binder = (LocalBinder) service;
+            dbService = binder.getService();
+            dbBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            dbBound = false;
+        }
+    };
 }

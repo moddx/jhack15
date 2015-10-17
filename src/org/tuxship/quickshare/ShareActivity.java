@@ -55,7 +55,7 @@ public class ShareActivity extends Activity {
 		
 		
 		TextView tokentext = (TextView)findViewById(R.id.sharetoken);
-		tokentext.setText(token);
+		tokentext.setText("Token: "+token);
 		
 		Button shares_button = (Button)findViewById(R.id.allshares);
 		shares_button.setText("All shares");

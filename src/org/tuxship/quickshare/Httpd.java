@@ -3,6 +3,12 @@ package org.tuxship.quickshare;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -65,6 +71,7 @@ public class Httpd extends Service
 	        Map<String, String> parms = session.getParms();
 
 	        WebContent content = new WebContent(getApplication().getApplicationContext());
+	        
 	        String page = "<!DOCTYPE html><html><head>";
 	        page += content.getStyles();
 	        page += "</head><body>";
@@ -74,16 +81,20 @@ public class Httpd extends Service
 		     */
 	        page += content.getHeader();
 	        
+	        page += "<div id=\"content\">";
 	        
 		    /*
 		     * Login Prompt // Data Listing
 		     */
-	        if (parms.get("username") == null) {
-	            page += "<form action='?' method='get'>\n  <p>Your Token: <input type='text' name='accessToken'></p>\n" + "</form>\n";
+	        if (parms.get("accessToken") == null) {
+	            page += "<form action='?' method='get'>\n"
+	            		+ "<p>Your Token: <input type='text' name='accessToken'><input type='submit' value='submit'></p>\n" + "</form>\n";
 	        } else {
-	            page += "<p>Hello, " + parms.get("accessToken") + "!</p>";
+	            page += "<p>Hello, here are your files (Token: " + parms.get("accessToken") + " )</p>";
 	        }
 	        
+	        page += "</div>";
+
 	        
 		    /*
 		     * Footer

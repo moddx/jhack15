@@ -3,6 +3,7 @@ package org.tuxship.quickshare;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 import android.content.Context;
@@ -20,15 +21,15 @@ public class WebContent {
 		String data = "";
 		
 		try {
-			FileInputStream iStream = context.openFileInput(file);
+			InputStream iStream = context.getAssets().open(file);
 			BufferedInputStream bStream = new BufferedInputStream(iStream);
 			Scanner scan = new Scanner(bStream);
 			
-			while(scan.hasNext())
-				data += scan.next();
+			while(scan.hasNextLine())
+				data += scan.nextLine();
 			
 			scan.close();
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			Log.e("quickshare", "Could not open html file '" + file + "'!");
 		}
 		
@@ -36,17 +37,17 @@ public class WebContent {
 	}
 	
 	public String getStyles() {
-		String styles = readFile("assets/html/Styles.html");
+		String styles = readFile("Styles.html");
 		return styles;
 	}
 	
 	public String getHeader() {
-		String header = readFile("assets/html/Header.html");
+		String header = readFile("Header.html");
 		return header;
 	}
 	
 	public String getFooter() {
-		String footer = readFile("assets/html/Footer.html");
+		String footer = readFile("Footer.html");
 		return footer;
 	}
 	

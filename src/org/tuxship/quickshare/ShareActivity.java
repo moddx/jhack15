@@ -14,46 +14,47 @@ import android.widget.TextView;
 
 public class ShareActivity extends Activity {
 
-	
+
 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
-		
-//		Intent webIntent = new Intent();
-//		webIntent.setAction("org.tuxship.STARTHTTPD");
-//		
-//		startService(webIntent);
-		
+
+		//		Intent webIntent = new Intent();
+		//		webIntent.setAction("org.tuxship.STARTHTTPD");
+		//		
+		//		startService(webIntent);
+
 		/*
 		 * Start web server
 		 */
 		startService(new Intent(this, Httpd.class));
-		
+
 		TokenDatabase tdb=new TokenDatabase(getApplicationContext());
-		
-		TextView text = (TextView) findViewById(R.id.hello_world);
-		
+
+		TextView  link= (TextView) findViewById(R.id.remote_link);
+		link.setText("http://"+tdb.ip_wifi()+":8080");
+
 		JSONObject a=new JSONObject();
 		JSONArray a1=new JSONArray();
 		a1.put("file1");
 		a1.put("file2");
 		a1.put("file3");
 		a1.put("file4");
-		
+
 		JSONArray a2=new JSONArray();
 		a2.put("file38921");
 		a2.put("file32131");
 		a2.put("file321321");
 		a2.put("file31213");
-		
-		tdb.addtoJSON(a, "key1", a1);
-		tdb.addtoJSON(a, "key31", a2);
 
-		
-		text.setText(tdb.createKey(a1));
+		tdb.addtoJSON(a, "key1","name1", a1);
+		tdb.addtoJSON(a, "key31","name2", a2);
+
+		TextView  list= (TextView) findViewById(R.id.filelist);
+		list.setText(tdb.getShares(a).toString());
 	}
 
 	@Override

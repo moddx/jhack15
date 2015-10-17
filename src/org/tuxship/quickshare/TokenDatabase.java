@@ -4,13 +4,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -84,8 +84,25 @@ public class TokenDatabase {
 		return ipAddressString;
 	}
 	
+	public List<String> getShares(JSONObject obj){
+		ArrayList<String> list = new ArrayList<String>();
+		
+		try {
+			JSONArray db=obj.getJSONArray("db");
+			JSONObject curobj;
+		
+			for(int i = 0; i < db.length(); i++){
+				curobj=(JSONObject) db.get(i);
+				list.add((String) curobj.get("name"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}		
+		
+		return list;
+	}
 	
-	public void addtoJSON(JSONObject obj,String key,JSONArray files){
+	public void addtoJSON(JSONObject obj,String key, String name,JSONArray files){
 		try{
 			JSONArray db;
 			if(!obj.has("db")){//check if top level array exists
@@ -97,6 +114,7 @@ public class TokenDatabase {
 			
 			JSONObject input=new JSONObject();
 			input.put("key",key);
+			input.put("name", name);
 			input.put("files",files);
 			db.put(input);
 			obj.put("db", db);			

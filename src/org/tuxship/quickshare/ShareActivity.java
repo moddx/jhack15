@@ -1,6 +1,8 @@
 package org.tuxship.quickshare;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -31,8 +33,27 @@ public class ShareActivity extends Activity {
 		startService(new Intent(this, Httpd.class));
 		
 		TokenDatabase tdb=new TokenDatabase(getApplicationContext());
+		
 		TextView text = (TextView) findViewById(R.id.hello_world);
-		text.setText(tdb.ip_wifi());
+		
+		JSONObject a=new JSONObject();
+		JSONArray a1=new JSONArray();
+		a1.put("file1");
+		a1.put("file2");
+		a1.put("file3");
+		a1.put("file4");
+		
+		JSONArray a2=new JSONArray();
+		a2.put("file38921");
+		a2.put("file32131");
+		a2.put("file321321");
+		a2.put("file31213");
+		
+		tdb.addtoJSON(a, "key1", a1);
+		tdb.addtoJSON(a, "key31", a2);
+
+		
+		text.setText(tdb.createKey(a1));
 	}
 
 	@Override

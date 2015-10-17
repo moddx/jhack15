@@ -28,7 +28,11 @@ import android.widget.TextView;
 
 public class ShareActivity extends Activity {
 
+	public static final String EXTRA_SHARE = "extraShareName";
+	public static final String EXTRA_TOKEN = "extraToken";
+	
 	String shareName;
+	String token;
 	
 	TokenDatabase dbService;
 	boolean dbBound = false;
@@ -39,7 +43,8 @@ public class ShareActivity extends Activity {
 		setContentView(R.layout.activity_share);
 		
 		Intent shareNameIntent = getIntent();
-		shareName = shareNameIntent.getStringExtra("sharename");
+		shareName = shareNameIntent.getStringExtra(EXTRA_SHARE);
+		token = shareNameIntent.getStringExtra(EXTRA_TOKEN);
 		
 		TextView link = (TextView)findViewById(R.id.remote_link);
 		link.setText("http://" + getWifiIP() + ":8080");
@@ -47,15 +52,9 @@ public class ShareActivity extends Activity {
 		Button shares_button = (Button)findViewById(R.id.allshares);
 		shares_button.setText("All shares");
 		
-		if(dbBound) {
-			/*
-			 * Add database access stuff here
-			 */
-		}
 		
 //		Intent webIntent = new Intent();
 //		webIntent.setAction("org.tuxship.STARTHTTPD");
-//		
 //		startService(webIntent);
 		
 		/*

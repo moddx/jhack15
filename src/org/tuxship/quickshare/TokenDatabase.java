@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -22,39 +23,49 @@ public class TokenDatabase extends Service {
 	public String FILENAME = "token_database";
 
 	private final int tokenLength = 6;
+	Context context;
 
 	// Binder given to clients
     private final IBinder binder = new LocalBinder();
-	
-//	Context context;
-	
-//	public TokenDatabase(Context context) {
-//		this.context = context;
-//	}
-	
+	}
+
 	public String addShare(String name, ArrayList<String> files) {
-		/*
-		 * Create token
-		 */
-		String token = "";
-		
-		/*
-		 * Store files and sharename with token
-		 */
-		
+		JSONArray jarray = new JSONArray(files);
+		JSONObject jobj=loadJSON();
+		String token=createKey(jarray);
+		addtoJSON(jobj, name, token, jarray);
+		saveJSON(jobj);
+
 		return token;
 	}
-	
+
 	public boolean deleteShare(String name) {
-		/*
-		 * Delete json stuff and return success
-		 */
-		
-		
-		return false;
+		if(removefromJSON(name)){
+			return true;
+		} else {
+			return false;
+		}
 	}
-	
-	
+
+	public List<String> getShares(JSONObject obj){
+		ArrayList<String> list = new ArrayList<String>();
+
+		try {
+			JSONArray db=obj.getJSONArray("db");
+			JSONObject curobj;
+
+			for(int i = 0; i < db.length(); i++){
+				curobj=(JSONObject) db.get(i);
+				list.add((String) curobj.get("name"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}		
+
+		return list;
+	}
+
+
 	private String createKey(JSONArray files) {
 		String str=files.toString();
 
@@ -64,9 +75,9 @@ public class TokenDatabase extends Service {
 
 			MessageDigest md;
 			md = MessageDigest.getInstance("SHA1");
-			
+
 			byte[] thedigest = md.digest(bytesOfMessage);
-			
+
 			for(byte b : thedigest) {
 				if((0xff & b) < 0x10) {
 					result.append("0"
@@ -78,11 +89,11 @@ public class TokenDatabase extends Service {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return result.substring(result.length() - tokenLength);
 	}
-	
-	private void addtoJSON(JSONObject obj,String key,JSONArray files){
+
+	private void addtoJSON(JSONObject obj,String name,String key,JSONArray files){
 		try{
 			JSONArray db;
 			if(!obj.has("db")){//check if top level array exists
@@ -91,28 +102,40 @@ public class TokenDatabase extends Service {
 			} else {
 				db=obj.getJSONArray("db");
 			}
-			
+
 			JSONObject input=new JSONObject();
 			input.put("key",key);
+			input.put("name", name);
 			input.put("files",files);
 			db.put(input);
 			obj.put("db", db);			
-			
+
 		}catch(JSONException e){
 			e.printStackTrace();
 		} 
 	}
-	
-	private void removefromJSON(JSONObject obj,String sname){
-//		try{
-			obj.remove(sname);
-			
-//		}catch(JSONException e){
-//			e.printStackTrace();
-//		}
+
+	private boolean removefromJSON(String sname){
+		JSONObject in=loadJSON();
+		try{
+			JSONArray db=in.getJSONArray("db");
+			for(int i=0; i<db.length();i++){
+				JSONObject obj=db.getJSONObject(i);
+				if(obj.get("name")==sname){
+					db.remove(i);
+					in.put("db",db);
+					saveJSON(in);
+					return true;
+				}
+			}
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return false;
 	}
-	
-	
+
+
 	private void saveJSON(JSONObject obj){
 
 		try{
@@ -126,7 +149,7 @@ public class TokenDatabase extends Service {
 				ioex.printStackTrace();
 			}
 		} catch(FileNotFoundException fnf){
-			
+
 			fnf.printStackTrace();
 		}
 

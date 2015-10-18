@@ -27,6 +27,7 @@ public class TokenDatabase extends Service {
 	// Binder given to clients
     private final IBinder binder = new LocalBinder();
     
+    
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // We want this service to continue running until it is explicitly
@@ -165,7 +166,16 @@ public class TokenDatabase extends Service {
 		return false;
 	}
 
-
+	private void initFile() {
+		try {
+			FileOutputStream fos = getApplication().getApplicationContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			fos.write("{}".getBytes());
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void saveJSON(JSONObject obj){
 
 		try{
@@ -195,8 +205,9 @@ public class TokenDatabase extends Service {
 				result += scan.next();
 			}
 			scan.close();
-		} catch(IOException e){
-			e.printStackTrace();
+		} catch(FileNotFoundException e){
+			initFile();
+			return loadJSON();
 		}
 
 		try {

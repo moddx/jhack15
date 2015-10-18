@@ -23,6 +23,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -59,6 +60,16 @@ public class ShareActivity extends Activity {
 		
 		Button shares_button = (Button)findViewById(R.id.allshares);
 		shares_button.setText("All shares");
+
+		shares_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                
+            }
+        });
+
+		
+		
+		
 		
 		
 //		Intent webIntent = new Intent();

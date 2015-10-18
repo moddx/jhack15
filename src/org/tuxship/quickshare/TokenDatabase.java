@@ -70,9 +70,9 @@ public class TokenDatabase extends Service {
 
 		return list;
 	}
-	
+
 	public List<String> getFilesforToken(String token){
-		
+
 		List<String> files=new ArrayList<String>();
 		try {
 			JSONObject obj=loadJSON();
@@ -213,7 +213,7 @@ public class TokenDatabase extends Service {
 		return binder;
 	}
 
-	
+
 	public class LocalBinder extends Binder {
 		TokenDatabase getService() {
 			return TokenDatabase.this;

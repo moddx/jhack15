@@ -89,26 +89,30 @@ public class TokenDatabase extends Service {
 
 	public List<String> getFilesforToken(String token){
 
-		List<String> files=new ArrayList<String>();
+		List<String> files = new ArrayList<String>();
 		try {
-			JSONObject obj=loadJSON();
-			JSONArray db=obj.getJSONArray("db");
-			JSONObject curobj;
+			JSONArray db = loadJSON().getJSONArray("db");
+			
+			Log.i("dataout", "files in db for token: " + db.length());
 			for(int i = 0; i < db.length(); i++){
-				curobj=(JSONObject) db.get(i);
-				if(curobj.get("key")==token){
-					JSONArray curfiles=curobj.getJSONArray("files");
-					for(int j=0;j<curfiles.length();j++){
+				JSONObject curobj = (JSONObject) db.get(i);
+				
+				if(curobj.get("key").equals(token)){
+					JSONArray curfiles = curobj.getJSONArray("files");
+					for(int j = 0; j < curfiles.length(); j++){
 						files.add(curfiles.getString(j));
 					}
 				}
 			}
-			if(files.size()==0){
+			
+			if(files.size() == 0){
 				files.add("No files for your token");
 			}
+			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		
 		return files;
 	}
 

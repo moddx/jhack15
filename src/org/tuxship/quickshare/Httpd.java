@@ -1,15 +1,11 @@
 package org.tuxship.quickshare;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.tuxship.quickshare.TokenDatabase.LocalBinder;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -125,7 +121,10 @@ public class Httpd extends Service
 	            if(dbBound){
 	            	List<String> files=dbService.getFilesforToken(parms.get("accessToken"));
 	            	for(int i =0;i<files.size();i++){
+	            		File f=new File(files.get(i));
+	            			            		
 	            		page +="<tr><td>"+files.get(i)+"</td></tr>\n";
+	            		page +="<tr><td>"+f.getAbsolutePath()+"</td></tr>\n";
 	            	}
 	            } else {
 	            	Log.w("shareintent", "httpd has not bound db");

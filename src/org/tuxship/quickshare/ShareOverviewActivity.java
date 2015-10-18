@@ -6,6 +6,7 @@ import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -41,6 +42,24 @@ public class ShareOverviewActivity extends Activity {
 		 */
 		startService(new Intent(this, Httpd.class));
 	}
+	
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, TokenDatabase.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+	
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (dbBound) {
+            unbindService(mConnection);
+            dbBound = false;
+        }
+    }
 
 	private void setupRows() {
 		if(dbBound) {

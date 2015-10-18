@@ -6,6 +6,7 @@ import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
@@ -43,7 +44,6 @@ public class CreateShareActivity extends Activity {
 		Log.i("shareintent", action);
 		Log.i("shareintent", type);
 		
-		
 		if(action.equals("android.intent.action.SEND")) {
 			files = new ArrayList<Uri>();
 			Uri receivedUri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -75,6 +75,24 @@ public class CreateShareActivity extends Activity {
 		setup();
 	}
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, TokenDatabase.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+	
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (dbBound) {
+            unbindService(mConnection);
+            dbBound = false;
+        }
+    }
+    
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -112,8 +130,10 @@ public class CreateShareActivity extends Activity {
 				 * Store in database
 				 */
 				String token = "";
-				if(dbBound && files != null) {
+				if(dbBound && paths != null) {
 					token = dbService.addShare(shareName, paths);
+				} else {
+					Log.w("shareintent", "Could not store new share! dbBound: " + dbBound + " paths count: " + paths.size());
 				}
 				
 				

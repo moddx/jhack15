@@ -63,22 +63,31 @@ public class ShareActivity extends Activity {
 
 		shares_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-				Intent intent = new Intent(getParent(), ShareOverviewActivity.class);
+				Intent intent = new Intent(ShareActivity.this, ShareOverviewActivity.class);
 				startActivity(intent);
                 
             }
         });
-
-		
-		
-		
-		
-		
-//		Intent webIntent = new Intent();
-//		webIntent.setAction("org.tuxship.STARTHTTPD");
-//		startService(webIntent);
 		
 	}
+	
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, TokenDatabase.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+	
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (dbBound) {
+            unbindService(mConnection);
+            dbBound = false;
+        }
+    }
 	
 	private String getWifiIP(){
 		WifiManager manager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);

@@ -63,6 +63,8 @@ public class ShareActivity extends Activity {
 
 		shares_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+				Intent intent = new Intent(getParent(), ShareOverviewActivity.class);
+				startActivity(intent);
                 
             }
         });

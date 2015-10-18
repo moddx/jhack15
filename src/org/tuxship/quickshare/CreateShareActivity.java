@@ -1,7 +1,6 @@
 package org.tuxship.quickshare;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 
@@ -9,6 +8,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -29,7 +29,7 @@ public class CreateShareActivity extends Activity {
 	TokenDatabase dbService;
 	boolean dbBound = false;
 	
-	String[] files;
+	ArrayList<Uri> files;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +37,30 @@ public class CreateShareActivity extends Activity {
 		setContentView(R.layout.activity_create_share);
 		
 		Intent intent = getIntent();
-		Log.i("shareintent", intent.getAction());
-		Log.i("shareintent", intent.getDataString());
+		String action = intent.getAction();
+		String type = intent.getType();
+		
+		Log.i("shareintent", action);
+		Log.i("shareintent", type);
+		
+		
+		if(action.equals("android.intent.action.SEND")) {
+			files = new ArrayList<Uri>();
+			Uri receivedUri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
+			
+			files.add(receivedUri);
+			
+			if(receivedUri == null)
+				Log.i("shareintent", "receivedUri is null");
+			else
+				Log.i("shareintent", receivedUri.getPath());
+			
+		} else if (action.equals("android.intent.action.SEND_MULTIPLE")) {
+			files = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+		
+			for(Uri f : files)
+				Log.i("shareintent", f.getPath());
+		}
 		
 //		  // Figure out what to do based on the intent type
 //	    if (intent.getType().indexOf("image/") != -1) {
@@ -47,8 +69,8 @@ public class CreateShareActivity extends Activity {
 //	        // Handle intents with text ...
 //	    }
 		
-		files = new String[1];
-		files[0] = intent.getData().toString();
+		Log.i("shareintent", "ShareIntent finished.");
+		
 		
 		setup();
 	}
@@ -84,12 +106,14 @@ public class CreateShareActivity extends Activity {
 				if(shareName.equals(""))
 					return;
 				
+				ArrayList<String> paths = convertUris(files);
+				
 				/*
 				 * Store in database
 				 */
 				String token = "";
 				if(dbBound && files != null) {
-					token = dbService.addShare(shareName, Arrays.asList(files));
+					token = dbService.addShare(shareName, paths);
 				}
 				
 				
@@ -97,12 +121,22 @@ public class CreateShareActivity extends Activity {
 				 *  Launch ShareActivity
 				 */
 				
-				Intent intent = new Intent(getParent(), ShareActivity.class);
+				Intent intent = new Intent(CreateShareActivity.this, ShareActivity.class);
 				intent.putExtra(ShareActivity.EXTRA_SHARE, shareName);
 				intent.putExtra(ShareActivity.EXTRA_TOKEN, token);
 				startActivity(intent);
 			}
 		});
+	}
+	
+	private ArrayList<String> convertUris(ArrayList<Uri> uris) {
+		ArrayList<String> paths = new ArrayList<String>();
+		
+		for(Uri uri : uris) {
+			paths.add(uri.getPath());
+		}
+		
+		return paths;
 	}
 	
 	/** Defines callbacks for service binding, passed to bindService() */

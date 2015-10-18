@@ -25,8 +25,8 @@ public class TokenDatabase extends Service {
 	private final int tokenLength = 6;
 
 	// Binder given to clients
-    private final IBinder binder = new LocalBinder();
-    
+	private final IBinder binder = new LocalBinder();
+
 
 	public String addShare(String name, List<String> files) {
 		JSONArray jarray = new JSONArray(files);
@@ -64,9 +64,9 @@ public class TokenDatabase extends Service {
 
 		return list;
 	}
-	
+
 	public List<String> getFilesforToken(String token){
-		
+
 		List<String> files=new ArrayList<String>();
 		try {
 			JSONObject obj=loadJSON();
@@ -207,7 +207,7 @@ public class TokenDatabase extends Service {
 		return binder;
 	}
 
-	
+
 	public class LocalBinder extends Binder {
 		TokenDatabase getService() {
 			return TokenDatabase.this;

@@ -48,6 +48,9 @@ public class ShareOverviewActivity extends Activity {
 		 */
 		setupRows();
 		
+		Log.i("dataout", dbService.printdatabase());
+		
+		
 		/*
 		 * Start web server
 		 */

@@ -21,7 +21,7 @@ import android.widget.EditText;
 
 public class CreateShareActivity extends Activity {
 	
-	public static final String EXTRA_FILES = "filesToShare";
+//	public static final String EXTRA_FILES = "filesToShare";
 
 	Button submitBtn;
 	EditText shareNameInput; 
@@ -36,10 +36,19 @@ public class CreateShareActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_share);
 		
-		Intent shareIntent = getIntent();
-		Log.i("shareintent", shareIntent.getAction());
-		Log.i("shareintent", shareIntent.getData().toString());
-		files = shareIntent.getStringArrayExtra(EXTRA_FILES);
+		Intent intent = getIntent();
+		Log.i("shareintent", intent.getAction());
+		Log.i("shareintent", intent.getDataString());
+		
+//		  // Figure out what to do based on the intent type
+//	    if (intent.getType().indexOf("image/") != -1) {
+//	        // Handle intents with image data ...
+//	    } else if (intent.getType().equals("text/plain")) {
+//	        // Handle intents with text ...
+//	    }
+		
+		files = new String[1];
+		files[0] = intent.getData().toString();
 		
 		setup();
 	}

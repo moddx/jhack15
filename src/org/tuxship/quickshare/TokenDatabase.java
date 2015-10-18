@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 public class TokenDatabase extends Service {
 	public String FILENAME = "token_database";
@@ -44,7 +45,21 @@ public class TokenDatabase extends Service {
 
 		return token;
 	}
-
+	public String printdatabase(){
+		JSONObject db = loadJSON();
+		
+		if(db == null) 
+			return "Database is empty";
+		
+		String ret="";
+		try {
+			ret = db.toString(8);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return ret;
+		
+	}
 	public boolean deleteShare(String name) {
 		if(removefromJSON(name)){
 			return true;
@@ -214,6 +229,7 @@ public class TokenDatabase extends Service {
 			out=new JSONObject(result);
 		} catch (JSONException e) {
 			e.printStackTrace();
+			Log.w("dataout", "could not create jsonobject from loaded data");
 		}
 
 		return out;

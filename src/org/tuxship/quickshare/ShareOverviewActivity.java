@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager.LayoutParams;
 import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -31,6 +33,11 @@ public class ShareOverviewActivity extends Activity {
 		setContentView(R.layout.activity_share_overview);
 		
 		tlayout = (TableLayout)findViewById(R.layout.activity_share_overview);
+		
+		/*
+		 * Start database server
+		 */
+		startService(new Intent(this, TokenDatabase.class));
 		
 		// Bind to dbService
         Intent dbIntent = new Intent(this, TokenDatabase.class);
@@ -73,7 +80,11 @@ public class ShareOverviewActivity extends Activity {
 				
 				CheckBox chckBx = new CheckBox(getApplicationContext());
 				row.addView(chckBx);
+				
+				tlayout.addView(row, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			}
+		} else {
+			Log.w("shareintent", "overview has no dbBound");
 		}
 	}
 	

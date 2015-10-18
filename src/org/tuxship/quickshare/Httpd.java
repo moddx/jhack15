@@ -127,6 +127,8 @@ public class Httpd extends Service
 	            	for(int i =0;i<files.size();i++){
 	            		page +="<tr><td>"+files.get(i)+"</td></tr>\n";
 	            	}
+	            } else {
+	            	Log.w("shareintent", "httpd has not bound db");
 	            }
 	            page += "</table>\n";
 	        }

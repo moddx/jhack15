@@ -76,11 +76,6 @@ public class ShareActivity extends Activity {
 //		webIntent.setAction("org.tuxship.STARTHTTPD");
 //		startService(webIntent);
 		
-		/*
-		 * Start web server
-		 */
-		startService(new Intent(this, Httpd.class));
-		
 	}
 	
 	private String getWifiIP(){

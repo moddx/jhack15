@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +37,8 @@ public class CreateShareActivity extends Activity {
 		setContentView(R.layout.activity_create_share);
 		
 		Intent shareIntent = getIntent();
+		Log.i("shareintent", shareIntent.getAction());
+		Log.i("shareintent", shareIntent.getData().toString());
 		files = shareIntent.getStringArrayExtra(EXTRA_FILES);
 		
 		setup();

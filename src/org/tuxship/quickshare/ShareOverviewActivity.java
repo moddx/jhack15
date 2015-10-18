@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,22 +40,25 @@ public class ShareOverviewActivity extends Activity {
 		 */
 		startService(new Intent(this, TokenDatabase.class));
 		
-		// Bind to dbService
-        Intent dbIntent = new Intent(this, TokenDatabase.class);
-        bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
-		
-		/*
-		 * Setup rows
-		 */
-		setupRows();
-		
-		Log.i("dataout", dbService.printdatabase());
-		
-		
 		/*
 		 * Start web server
 		 */
 		startService(new Intent(this, Httpd.class));
+		
+		// Bind to database
+        Intent dbIntent = new Intent(this, TokenDatabase.class);
+        bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
+		
+        
+ 		/*
+ 		 * Setup rows
+ 		 */
+ 		setupRows();
+ 		
+ 		if(dbBound)
+ 			Log.i("dataout", dbService.printdatabase());
+ 		else 
+ 			Log.w("dataout", "db not bound in overview 2");
 	}
 	
     @Override

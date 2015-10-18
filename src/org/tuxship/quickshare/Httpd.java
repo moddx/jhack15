@@ -13,6 +13,7 @@ import org.xml.sax.SAXException;
 
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
@@ -37,7 +38,16 @@ public class Httpd extends Service
     {
     	super.onCreate();
     	
-    	Log.i("org.tuxship", "onCreate() in Httpd.java is called!!!!!!!!!!!!!!!");
+    	Log.i("org.tuxship", "onCreate() in Httpd.java is called!");
+    	
+    	/*
+		 * Start database server
+		 */
+		startService(new Intent(this, TokenDatabase.class));
+    	
+    	// Bind to dbService
+        Intent dbIntent = new Intent(this, TokenDatabase.class);
+        bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
     	
         server = new WebServer();
         
@@ -61,6 +71,13 @@ public class Httpd extends Service
     public void onDestroy()
     {
         super.onDestroy();
+        // Unbind from the dbService
+        if (dbBound) {
+            unbindService(mConnection);
+            dbBound = false;
+        }
+        
+        // stop the webserver
         if (server != null)
             server.stop();
     }

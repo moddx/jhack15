@@ -37,6 +37,10 @@ public class CreateShareActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_share);
 		
+        // Bind to Database
+        Intent dbIntent = new Intent(this, TokenDatabase.class);
+        bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
+		
 		Intent intent = getIntent();
 		String action = intent.getAction();
 		String type = intent.getType();
@@ -75,17 +79,9 @@ public class CreateShareActivity extends Activity {
 		setup();
 	}
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Bind to LocalService
-        Intent intent = new Intent(this, TokenDatabase.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-	
-    @Override
-    protected void onStop() {
-        super.onStop();
+	@Override
+    protected void onDestroy() {
+        super.onDestroy();
         // Unbind from the service
         if (dbBound) {
             unbindService(mConnection);

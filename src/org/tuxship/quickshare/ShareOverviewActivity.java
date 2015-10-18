@@ -32,6 +32,10 @@ public class ShareOverviewActivity extends Activity {
 		
 		tlayout = (TableLayout)findViewById(R.layout.activity_share_overview);
 		
+		// Bind to dbService
+        Intent dbIntent = new Intent(this, TokenDatabase.class);
+        bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
+		
 		/*
 		 * Setup rows
 		 */
@@ -44,16 +48,8 @@ public class ShareOverviewActivity extends Activity {
 	}
 	
     @Override
-    protected void onStart() {
-        super.onStart();
-        // Bind to LocalService
-        Intent intent = new Intent(this, TokenDatabase.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-	
-    @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         // Unbind from the service
         if (dbBound) {
             unbindService(mConnection);

@@ -27,6 +27,12 @@ public class TokenDatabase extends Service {
 	// Binder given to clients
     private final IBinder binder = new LocalBinder();
     
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        return START_STICKY;
+    }
 
 	public String addShare(String name, List<String> files) {
 		JSONArray jarray = new JSONArray(files);

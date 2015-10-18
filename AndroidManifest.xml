@@ -29,6 +29,11 @@
             android:enabled="true" >
         </service>
 
+        <service
+            android:name=".TokenDatabase"
+            android:enabled="true" >
+        </service>
+        
         <activity
             android:name=".CreateShareActivity"
             android:label="@string/title_activity_create_share" >

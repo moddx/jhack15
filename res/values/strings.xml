@@ -8,5 +8,8 @@
     <string name="share_name">share name</string>
     <string name="title_activity_share_overview">Your Shares</string>
     <string name="all_shares">All shares</string>
+    <string name="delete_shares">Delete Share(s)</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="title_activity_share_details">Share Details</string>
 
 </resources>

@@ -48,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:text="Delete Share(s)"
+        android:text="@string/delete_shares"
         android:onClick="deleteShares"
         android:enabled="false" />
 

@@ -65,20 +65,19 @@ public class TokenDatabase extends Service {
 	}
 
 	public List<String> getShares(){
-		JSONObject obj = loadJSON();
 		ArrayList<String> list = new ArrayList<String>();
 
+		JSONObject obj = loadJSON();
+		
 		try {
 			JSONArray db = obj.getJSONArray("db");
-			JSONObject curobj;
 
 			for(int i = 0; i < db.length(); i++){
-				curobj = (JSONObject) db.get(i);
-				list.add(curobj.get("name").toString());
+				list.add(db.getJSONObject(i).get("name").toString());
 			}
 		} catch (JSONException e) {
 			/*
-			 *  no values in db yet!!
+			 *  no values in db!
 			 *  return empty list
 			 */
 		}		
@@ -250,5 +249,23 @@ public class TokenDatabase extends Service {
 		TokenDatabase getService() {
 			return TokenDatabase.this;
 		}
+	}
+
+
+	public String getToken(String share) throws Exception {
+		try {
+			JSONArray db = loadJSON().getJSONArray("db");
+			
+			for(int i = 0; i < db.length();  i++) {
+				JSONObject curShare = db.getJSONObject(i);
+				
+				if(curShare.getString("name").equals(share))
+					return curShare.getString("key");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		throw new Exception("No share with the name '" + share + "'!");
 	}
 }

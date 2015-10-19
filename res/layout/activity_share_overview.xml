@@ -49,6 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:text="Delete Share(s)"
-        android:onClick="deleteShares" />
+        android:onClick="deleteShares"
+        android:enabled="false" />
 
 </FrameLayout>

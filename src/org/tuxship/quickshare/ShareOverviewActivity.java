@@ -16,7 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -25,14 +27,14 @@ import android.widget.Toast;
 
 public class ShareOverviewActivity extends Activity {
 
+	Context context;
 	TableLayout tlayout;
+	Button deleteButton;
 	
 	TokenDatabase dbService;
     boolean dbBound = false;
 
     boolean initialised = false;
-    
-    Context context;
     
     Runnable updateRunnable = new Runnable() {
         @Override
@@ -46,8 +48,9 @@ public class ShareOverviewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share_overview);
 
-		tlayout = (TableLayout) findViewById(R.id.table);
 		context = this;
+		tlayout = (TableLayout) findViewById(R.id.table);
+		deleteButton = (Button) findViewById(R.id.deleteButton);
 		
 		/*
 		 * Start database server
@@ -102,13 +105,15 @@ public class ShareOverviewActivity extends Activity {
 			 * for all the shares..
 			 */
 			ArrayList<String> shares = (ArrayList<String>) dbService.getShares();
+
+			tlayout.removeAllViews();
 			
 			if(shares.size() == 0) {
 				noSharesPlaceholder();
 				return;
 			}
-			
-			for(String share : shares) {
+
+			for(final String share : shares) {
 				TableRow row = new TableRow(context);
 				TextView nameView = new TextView(context);
 				nameView.setText(share);
@@ -119,9 +124,27 @@ public class ShareOverviewActivity extends Activity {
 				CheckBox chckBx = new CheckBox(context);
 				chckBx.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 0.1f));
 				row.addView(chckBx);
-				
+
 				tlayout.addView(row, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+				
+				row.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent openDetailsIntent = new Intent(context, ShareActivity.class);
+						openDetailsIntent.putExtra(ShareActivity.EXTRA_SHARE, share);
+						
+						try {
+							openDetailsIntent.putExtra(ShareActivity.EXTRA_TOKEN, dbService.getToken(share));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
+						startActivity(openDetailsIntent);
+					}
+				});
 			}
+			
+			deleteButton.setEnabled(tlayout.getChildCount() > 0);
 		} else {
 			Log.e("shareintent", "overview has no dbBound");
 		}
@@ -160,6 +183,8 @@ public class ShareOverviewActivity extends Activity {
 				i++;
 			}
 		}
+		
+		deleteButton.setEnabled(tlayout.getChildCount() > 0);
 	}
 	
 	@Override

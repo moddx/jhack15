@@ -25,21 +25,22 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f08000a;
-        public static final int allshares=0x7f080006;
+        public static final int action_settings=0x7f08000b;
+        public static final int buttonAllShare=0x7f080007;
         public static final int captionText=0x7f080000;
-        public static final int deleteButton=0x7f080009;
-        public static final int remote_link=0x7f080004;
-        public static final int scrollView=0x7f080007;
+        public static final int deleteButton=0x7f08000a;
+        public static final int linkText=0x7f080004;
+        public static final int scrollView=0x7f080008;
         public static final int shareNameInput=0x7f080001;
-        public static final int sharename=0x7f080003;
-        public static final int sharetoken=0x7f080005;
+        public static final int shareText=0x7f080003;
         public static final int submitBtn=0x7f080002;
-        public static final int table=0x7f080008;
+        public static final int table=0x7f080009;
+        public static final int tokenHead=0x7f080005;
+        public static final int tokenText=0x7f080006;
     }
     public static final class layout {
         public static final int activity_create_share=0x7f030000;
-        public static final int activity_share=0x7f030001;
+        public static final int activity_share_details=0x7f030001;
         public static final int activity_share_overview=0x7f030002;
     }
     public static final class menu {
@@ -48,13 +49,13 @@ public final class R {
         public static final int share_overview=0x7f070002;
     }
     public static final class string {
-        public static final int action_settings=0x7f050002;
+        public static final int action_settings=0x7f050001;
+        public static final int all_shares=0x7f050006;
         public static final int app_name=0x7f050000;
-        public static final int enter_share_name=0x7f050004;
-        public static final int hello_world=0x7f050001;
-        public static final int share_name=0x7f050005;
-        public static final int title_activity_create_share=0x7f050003;
-        public static final int title_activity_share_overview=0x7f050006;
+        public static final int enter_share_name=0x7f050003;
+        public static final int share_name=0x7f050004;
+        public static final int title_activity_create_share=0x7f050002;
+        public static final int title_activity_share_overview=0x7f050005;
     }
     public static final class style {
         /** 

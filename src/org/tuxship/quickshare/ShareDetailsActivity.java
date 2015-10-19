@@ -30,27 +30,35 @@ public class ShareDetailsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_share);
+		setContentView(R.layout.activity_share_details);
 		
-		Intent shareNameIntent = getIntent();
-		shareName = shareNameIntent.getStringExtra(EXTRA_SHARE);
-		token = shareNameIntent.getStringExtra(EXTRA_TOKEN);
-		
-		TextView sharenametext = (TextView)findViewById(R.id.sharename);
-		sharenametext.setText(shareName);
-		
-		
-		TextView link = (TextView)findViewById(R.id.remote_link);
-		link.setText("http://" + getWifiIP() + ":8080");
+		/*
+		 * Receive intent extras.
+		 */
+		Intent inputIntent = getIntent();
+		shareName = inputIntent.getStringExtra(EXTRA_SHARE);
+		token = inputIntent.getStringExtra(EXTRA_TOKEN);
 		
 		
-		TextView tokentext = (TextView)findViewById(R.id.sharetoken);
-		tokentext.setText("Token: "+token);
+		/*
+		 * Setup TextViews.
+		 */
+		TextView shareText = (TextView)findViewById(R.id.shareText);
+		shareText.setText(shareName);
 		
-		Button shares_button = (Button)findViewById(R.id.allshares);
-		shares_button.setText("All shares");
+		TextView linkText = (TextView)findViewById(R.id.linkText);
+		linkText.setText("http://" + getWifiIP() + ":8080");
+		
+		TextView tokenText = (TextView)findViewById(R.id.tokenText);
+		tokenText.setText(token);
 
-		shares_button.setOnClickListener(new View.OnClickListener() {
+		
+		Button allSharesBtn = (Button)findViewById(R.id.buttonAllShare);
+
+		/*
+		 * Open the ShareOverviewActivity on click.
+		 */
+		allSharesBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 				Intent intent = new Intent(ShareDetailsActivity.this, ShareOverviewActivity.class);
 				startActivity(intent);

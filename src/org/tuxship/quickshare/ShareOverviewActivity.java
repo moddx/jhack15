@@ -13,10 +13,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.widget.CheckBox;
 import android.widget.TableLayout;
@@ -108,7 +107,6 @@ public class ShareOverviewActivity extends Activity {
 				return;
 			}
 			
-			int idIndex = 0;
 			for(String share : shares) {
 				TableRow row = new TableRow(context);
 				TextView nameView = new TextView(context);
@@ -138,6 +136,19 @@ public class ShareOverviewActivity extends Activity {
 		
 		row.addView(noShares, LayoutParams.MATCH_PARENT);
 		tlayout.addView(row);
+	}
+	
+	public void deleteShares(View v) {
+		for(int i = 0; i < tlayout.getChildCount();) {
+			TableRow row = (TableRow) tlayout.getChildAt(i);
+			
+			if(row.getChildCount() >= 2 && 
+					((CheckBox) row.getChildAt(1)).isChecked()) {
+				tlayout.removeViewAt(i);
+			} else {
+				i++;
+			}
+		}
 	}
 	
 	@Override

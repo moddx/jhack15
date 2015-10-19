@@ -127,14 +127,17 @@ public class ShareOverviewActivity extends Activity {
 
 				tlayout.addView(row, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 				
+				/*
+				 * Open a ShareDetailsActivity when clicking on a row.
+				 */
 				row.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Intent openDetailsIntent = new Intent(context, ShareActivity.class);
-						openDetailsIntent.putExtra(ShareActivity.EXTRA_SHARE, share);
+						Intent openDetailsIntent = new Intent(context, ShareDetailsActivity.class);
+						openDetailsIntent.putExtra(ShareDetailsActivity.EXTRA_SHARE, share);
 						
 						try {
-							openDetailsIntent.putExtra(ShareActivity.EXTRA_TOKEN, dbService.getToken(share));
+							openDetailsIntent.putExtra(ShareDetailsActivity.EXTRA_TOKEN, dbService.getToken(share));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

@@ -19,7 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class ShareActivity extends Activity {
+public class ShareDetailsActivity extends Activity {
 
 	public static final String EXTRA_SHARE = "extraShareName";
 	public static final String EXTRA_TOKEN = "extraToken";
@@ -52,7 +52,7 @@ public class ShareActivity extends Activity {
 
 		shares_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-				Intent intent = new Intent(ShareActivity.this, ShareOverviewActivity.class);
+				Intent intent = new Intent(ShareDetailsActivity.this, ShareOverviewActivity.class);
 				startActivity(intent);
                 
             }

@@ -9,12 +9,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.CheckBox;
 import android.widget.TableLayout;
@@ -27,13 +29,25 @@ public class ShareOverviewActivity extends Activity {
 	
 	TokenDatabase dbService;
     boolean dbBound = false;
+
+    boolean initialised = false;
+    
+    Context context;
+    
+    Runnable updateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateRows();
+        }
+    };
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share_overview);
-		
-		tlayout = (TableLayout)findViewById(R.layout.activity_share_overview);
+
+		tlayout = (TableLayout) findViewById(R.id.table);
+		context = this;
 		
 		/*
 		 * Start database server
@@ -44,55 +58,86 @@ public class ShareOverviewActivity extends Activity {
 		 * Start web server
 		 */
 		startService(new Intent(this, Httpd.class));
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
 		
-		// Bind to database
+		/*
+		 * Bind to database
+		 */
         Intent dbIntent = new Intent(this, TokenDatabase.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
 		
-        
- 		/*
- 		 * Setup rows
- 		 */
- 		setupRows();
- 		
- 		if(dbBound)
- 			Log.i("dataout", dbService.printdatabase());
- 		else 
- 			Log.w("dataout", "db not bound in overview 2");
+		/*
+         * Unbind from the service
+         */
+		if (dbBound) {
+            unbindService(mConnection);
+            dbBound = false;
+        }
 	}
 	
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unbind from the service
+        /*
+         * Unbind from the service
+         */
         if (dbBound) {
             unbindService(mConnection);
             dbBound = false;
         }
     }
 
-	private void setupRows() {
+	private void updateRows() {
 		if(dbBound) {
 			/*
 			 * for all the shares..
 			 */
 			ArrayList<String> shares = (ArrayList<String>) dbService.getShares();
 			
+			if(shares.size() == 0) {
+				noSharesPlaceholder();
+				return;
+			}
+			
 			int idIndex = 0;
 			for(String share : shares) {
-				TableRow row = new TableRow(getApplicationContext());
-				TextView nameView = new TextView(getApplicationContext());
+				TableRow row = new TableRow(context);
+				TextView nameView = new TextView(context);
 				nameView.setText(share);
+				nameView.setTextSize(nameView.getTextSize() * 1.25f);
+				nameView.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 0.9f));
 				row.addView(nameView);
 				
-				CheckBox chckBx = new CheckBox(getApplicationContext());
+				CheckBox chckBx = new CheckBox(context);
+				chckBx.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 0.1f));
 				row.addView(chckBx);
 				
-				tlayout.addView(row, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+				tlayout.addView(row, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			}
 		} else {
-			Log.w("shareintent", "overview has no dbBound");
+			Log.e("shareintent", "overview has no dbBound");
 		}
+	}
+	
+	private void noSharesPlaceholder() {
+		TableRow row = new TableRow(context);
+		
+		TextView noShares = new TextView(context);
+		noShares.setText("No Shares yet. Sorry.");
+		noShares.setTextColor(Color.LTGRAY);
+		noShares.setTextSize(noShares.getTextSize() * 1.5f);
+		
+		row.addView(noShares, LayoutParams.MATCH_PARENT);
+		tlayout.addView(row);
 	}
 	
 	@Override
@@ -123,6 +168,14 @@ public class ShareOverviewActivity extends Activity {
             LocalBinder binder = (LocalBinder) service;
             dbService = binder.getService();
             dbBound = true;
+            
+            /*
+     		 * Setup rows initially
+     		 */
+            if(!initialised) {
+            	updateRunnable.run();
+            	initialised = true;
+            }
         }
 
         @Override

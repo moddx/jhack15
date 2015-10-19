@@ -81,7 +81,10 @@ public class TokenDatabase extends Service {
 				list.add((String) curobj.get("name"));
 			}
 		} catch (JSONException e) {
-			e.printStackTrace();
+			/*
+			 *  no values in db yet!!
+			 *  return empty list
+			 */
 		}		
 
 		return list;
@@ -188,7 +191,7 @@ public class TokenDatabase extends Service {
 	private void initFile() {
 		try {
 			FileOutputStream fos = getApplication().getApplicationContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			fos.write("{}".getBytes());
+			fos.write("{\"db\": []}".getBytes());
 			fos.close();
 		} catch (Exception e) {
 			e.printStackTrace();

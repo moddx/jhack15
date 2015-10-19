@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="19"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -16,14 +16,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name=".ShareActivity"
-            android:label="@string/app_name" >
-            <!-- <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> -->
-        </activity>
-
+        
         <service
             android:name=".Httpd"
             android:enabled="true" >
@@ -34,7 +27,17 @@
             android:enabled="true" >
         </service>
         
+
         <activity
+            android:name=".ShareOverviewActivity"
+            android:label="@string/title_activity_share_overview" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+		<activity
             android:name=".CreateShareActivity"
             android:label="@string/title_activity_create_share" >
             <intent-filter>
@@ -65,13 +68,10 @@
                 <data android:scheme="file" />
             </intent-filter> -->
         </activity>
+        
         <activity
-            android:name=".ShareOverviewActivity"
-            android:label="@string/title_activity_share_overview" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name=".ShareActivity"
+            android:label="@string/app_name" >
         </activity>
     </application>
 

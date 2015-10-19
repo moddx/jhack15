@@ -61,24 +61,20 @@ public class TokenDatabase extends Service {
 		
 	}
 	public boolean deleteShare(String name) {
-		if(removefromJSON(name)){
-			return true;
-		} else {
-			return false;
-		}
+		return removefromJSON(name);
 	}
 
 	public List<String> getShares(){
-		JSONObject obj=loadJSON();
+		JSONObject obj = loadJSON();
 		ArrayList<String> list = new ArrayList<String>();
 
 		try {
-			JSONArray db=obj.getJSONArray("db");
+			JSONArray db = obj.getJSONArray("db");
 			JSONObject curobj;
 
 			for(int i = 0; i < db.length(); i++){
-				curobj=(JSONObject) db.get(i);
-				list.add((String) curobj.get("name"));
+				curobj = (JSONObject) db.get(i);
+				list.add(curobj.get("name").toString());
 			}
 		} catch (JSONException e) {
 			/*
@@ -169,22 +165,24 @@ public class TokenDatabase extends Service {
 	}
 
 	private boolean removefromJSON(String sname){
-		JSONObject in=loadJSON();
+		JSONObject in = loadJSON();
 		try{
-			JSONArray db=in.getJSONArray("db");
-			for(int i=0; i<db.length();i++){
-				JSONObject obj=db.getJSONObject(i);
-				if(obj.get("name")==sname){
+			JSONArray db = in.getJSONArray("db");
+			
+			for(int i = 0; i < db.length(); i++){
+				JSONObject obj = db.getJSONObject(i);
+				
+				if(obj.get("name").equals(sname)){
 					db.remove(i);
-					in.put("db",db);
+					in.put("db", db);
 					saveJSON(in);
 					return true;
 				}
 			}
-
-		}catch(Exception e){
+		}catch(JSONException e){
 			e.printStackTrace();
 		}
+		
 		return false;
 	}
 

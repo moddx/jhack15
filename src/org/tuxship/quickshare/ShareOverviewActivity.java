@@ -21,6 +21,7 @@ import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ShareOverviewActivity extends Activity {
 
@@ -142,9 +143,19 @@ public class ShareOverviewActivity extends Activity {
 		for(int i = 0; i < tlayout.getChildCount();) {
 			TableRow row = (TableRow) tlayout.getChildAt(i);
 			
-			if(row.getChildCount() >= 2 && 
+			if(row.getChildCount() >= 2 &&
+					dbBound &&
 					((CheckBox) row.getChildAt(1)).isChecked()) {
-				tlayout.removeViewAt(i);
+				
+				String shareName = ((TextView) row.getChildAt(0)).getText().toString();
+				
+				if(dbService.deleteShare(shareName))
+					tlayout.removeViewAt(i);
+				else {
+					Toast toast = Toast.makeText(context, "Could not remove " + shareName + " from database.", Toast.LENGTH_LONG);
+					toast.show();
+					i++;
+				}
 			} else {
 				i++;
 			}
@@ -155,6 +166,9 @@ public class ShareOverviewActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.share_overview, menu);
+		
+		menu.add("Refresh");
+		
 		return true;
 	}
 
@@ -165,6 +179,10 @@ public class ShareOverviewActivity extends Activity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			return true;
+		}
+		if(item.getTitle().equals("Refresh")) {
+			updateRunnable.run();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

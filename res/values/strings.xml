@@ -11,5 +11,6 @@
     <string name="delete_shares">Delete Share(s)</string>
     <string name="action_refresh">Refresh</string>
     <string name="title_activity_share_details">Share Details</string>
+    <string name="logtag">quickshare</string>
 
 </resources>

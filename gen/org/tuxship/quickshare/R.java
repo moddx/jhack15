@@ -46,7 +46,7 @@ public final class R {
     }
     public static final class menu {
         public static final int create_share=0x7f070000;
-        public static final int main=0x7f070001;
+        public static final int share_details=0x7f070001;
         public static final int share_overview=0x7f070002;
     }
     public static final class string {
@@ -56,6 +56,7 @@ public final class R {
         public static final int app_name=0x7f050000;
         public static final int delete_shares=0x7f050007;
         public static final int enter_share_name=0x7f050003;
+        public static final int logtag=0x7f05000a;
         public static final int share_name=0x7f050004;
         public static final int title_activity_create_share=0x7f050002;
         public static final int title_activity_share_details=0x7f050009;

@@ -1,11 +1,11 @@
 package org.tuxship.quickshare;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.tuxship.quickshare.TokenDatabase.LocalBinder;
+import org.tuxship.quickshare.webcontent.HackWebContent;
+import org.tuxship.quickshare.webcontent.IWebContent;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -96,51 +96,14 @@ public class Httpd extends Service
 	    	Log.i("quickshare", "SERVING A REQUEST");
 	        Map<String, String> parms = session.getParms();
 
-	        WebContent content = new WebContent(getApplication().getApplicationContext());
-	        
-	        String page = "<!DOCTYPE html><html><head>";
-	        page += content.getStyles();
-	        page += "</head><body>";
-	        
-	        /*
-		     * Header
-		     */
-	        page += content.getHeader();
-	        
-	        page += "<div id=\"content\">";
-	        
-		    /*
-		     * Login Prompt // Data Listing
-		     */
-	        if (parms.get("accessToken") == null) {
-	            page += "<form action='?' method='get'>\n"
-	            		+ "<p>Your Token: <input type='text' name='accessToken'><input type='submit' value='submit'></p>\n" + "</form>\n";
+        	IWebContent content = new HackWebContent(getApplication().getApplicationContext());
+        	
+	        if(dbBound) {
+	        	return newFixedLengthResponse(content.generatePage(dbService, parms).toString());
 	        } else {
-	            page += "<p>Hello, here are your files (Token: " + parms.get("accessToken") + " )</p>";
-	            page += "<table><tr><th>Your Files:</th></tr>\n";
-	            if(dbBound){
-	            	List<String> files=dbService.getFilesforToken(parms.get("accessToken"));
-	            	for(int i =0;i<files.size();i++){
-	            		File f=new File(files.get(i));
-	            			            		
-	            		page +="<tr><td>"+files.get(i)+"</td></tr>\n";
-	            		page +="<tr><td>"+f.getAbsolutePath()+"</td></tr>\n";
-	            	}
-	            } else {
-	            	Log.w("shareintent", "httpd has not bound db");
-	            }
-	            page += "</table>\n";
+	        	Log.e("@string/logtag", "no dbBound in Httpd.serve()");
+	        	return newFixedLengthResponse("Database error");
 	        }
-	        
-	        page += "</div>";
-
-	        
-		    /*
-		     * Footer
-		     */
-	        page += content.getFooter();
-	        
-	        return newFixedLengthResponse( page + "</body></html>\n" );
 	    }
 	}
     

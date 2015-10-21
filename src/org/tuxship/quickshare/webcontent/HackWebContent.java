@@ -26,7 +26,7 @@ public class HackWebContent implements IWebContent {
 		this.context = context;
 	}
 	
-	private String readFile(String file) {
+	private String readAssetFile(String file) {
 		String data = "";
 		
 		try {
@@ -46,21 +46,22 @@ public class HackWebContent implements IWebContent {
 	}
 	
 	private String getStyles() {
-		String styles = readFile("hackcontent/Styles.html");
+		String styles = readAssetFile("hackcontent/Styles.html");
 		return styles;
 	}
 	
 	private String getHeader() {
-		String header = readFile("hackcontent/Header.html");
+		String header = readAssetFile("hackcontent/Header.html");
 		return header;
 	}
 	
 	private String getFooter() {
-		String footer = readFile("hackcontent/Footer.html");
+		String footer = readAssetFile("hackcontent/Footer.html");
 		return footer;
 	}
 	
-	public StringBuilder generatePage(TokenDatabase dbService, Map<String, String> parms) {
+	@Override
+	public String generatePage(TokenDatabase dbService, Map<String, String> parms) {
 		StringBuilder page = new StringBuilder();
 
 		page.append("<!DOCTYPE html><html><head>");
@@ -105,7 +106,7 @@ public class HackWebContent implements IWebContent {
         
         page.append("</body></html>\n");
 
-        return page;
+        return page.toString();
 	}
 	
 }

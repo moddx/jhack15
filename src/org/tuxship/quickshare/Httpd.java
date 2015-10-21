@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.tuxship.quickshare.TokenDatabase.LocalBinder;
+import org.tuxship.quickshare.webcontent.BetterWebContent;
 import org.tuxship.quickshare.webcontent.HackWebContent;
 import org.tuxship.quickshare.webcontent.IWebContent;
 
@@ -46,7 +47,7 @@ public class Httpd extends Service
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
     	
         server = new WebServer();
-        
+
         try {
             server.start();
         } catch(IOException ioe) {
@@ -96,10 +97,11 @@ public class Httpd extends Service
 	    	Log.i("quickshare", "SERVING A REQUEST");
 	        Map<String, String> parms = session.getParms();
 
-        	IWebContent content = new HackWebContent(getApplication().getApplicationContext());
+//        	IWebContent content = new HackWebContent(getApplication().getApplicationContext());
+	        IWebContent content = new BetterWebContent(getApplication().getApplicationContext());
         	
 	        if(dbBound) {
-	        	return newFixedLengthResponse(content.generatePage(dbService, parms).toString());
+	        	return newFixedLengthResponse(content.generatePage(dbService, parms));
 	        } else {
 	        	Log.e("@string/logtag", "no dbBound in Httpd.serve()");
 	        	return newFixedLengthResponse("Database error");

@@ -9,6 +9,6 @@ import org.tuxship.quickshare.TokenDatabase;
  */
 public interface IWebContent {
 
-	public StringBuilder generatePage(TokenDatabase dbService, Map<String, String> parms);
+	public String generatePage(TokenDatabase dbService, Map<String, String> parms);
 	
 }

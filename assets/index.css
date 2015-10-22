@@ -1,46 +1,56 @@
 
+/* Colors
+ * 
+ * header & footer background
+ * 	#1b4d51
+ *
+ * background
+ *	#acc1c1
+ *
+ */
+
 body {
-	background: white;
+	background: #acc1c1;
 }
 
-table {
-border:1px solid black;
+#token {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 1em;
+}
+
+#files {
+	width: 60%;
+	margin: 0 auto;
+	text-align: left; 
 }
 
 #header {
 	position: absolute;
 	top: 0px;
-	text-align: center;
 	color: white;
-	background: orange;
+	background: #1b4d51;
 	height: 6em;
-	
 	width: 100%;
-/* 	margin-bottom: 2em;
-	padding-top: 2em;
-	padding-bottom: 2em; */
+	text-align: center;
 }
 
 #content {
 	position: absolute;
-	text-align: center;
 	top: 6em;
 	bottom: 6em;
 	height: 100%;
 	width: 100%;
-	/* padding-top: 2em;
-	padding-bottom: 2em; */
+	text-align: center;
+	margin-top: 1em;
 }
 
 #footer {
 	position: absolute;
 	bottom: 0px;
-	text-align: center;
-	background: orange;
+	background: #1b4d51;
 	color: white;
-	/* margin-top: 2em;
-	padding-top: 2em;
-	padding-bottom: 2em; */
 	height: 6em;
 	width: 100%;
+	text-align: center;
 }

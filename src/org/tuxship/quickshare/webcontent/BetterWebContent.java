@@ -59,28 +59,30 @@ public class BetterWebContent implements IWebContent {
 			/*
 			 * Prompt for user token
 			 */
-			String prompt = readAssetFile("prompt.html");
-			
-			Log.w("prompt", prompt);
-			
-			template.replace("_REPLACE_WITH_TABLE_OR_PROMPT_", prompt);
+			template = template.replace("_REPLACE_WITH_FILES_OR_PROMPT_", readAssetFile("prompt.html"));
 
 		} else {
 			/*
-			 * Generate table with files
+			 * Generate file list
 			 */
+			StringBuilder list = new StringBuilder();
+			list.append("<div id='token'>" + token + "</div>");
+			list.append("<p>Here are your files:</p>");
+			
+			
+			list.append("<ul id='files'>\n");
+			
 			List<String> files = dbService.getFilesforToken(token);
-
-			StringBuilder table = new StringBuilder();
-			table.append("<table>\n");
-
 			for (String f : files) {
-				table.append("<tr><td><a href='" + token + "/" + f + "'>" + f + "</a></td></tr>\n");
+				String[] parts = f.split("/");				// obtain file name from path
+				String fname = parts[parts.length - 1];
+				
+				list.append("<li><a href='" + token + "/" + f + "'>" + fname + "</a></li>\n");
 			}
 			
-			table.append("</table>\n");
+			list.append("</ul>\n");
 			
-			template = template.replace("_REPLACE_WITH_TABLE_OR_PROMPT_", table.toString());
+			template = template.replace("_REPLACE_WITH_FILES_OR_PROMPT_", list.toString());
 		}
 
 		return template;

@@ -25,10 +25,6 @@ public class Httpd extends Service
     TokenDatabase dbService;
     boolean dbBound = false;
     
-    public Httpd() {
-    	
-    }
-    
     /** Called when the service is first created. */
     @Override
 	public void onCreate()
@@ -96,6 +92,7 @@ public class Httpd extends Service
 	    public Response serve(IHTTPSession session) {
 	    	Log.i("quickshare", "SERVING A REQUEST");
 	        Map<String, String> parms = session.getParms();
+	        
 
 //        	IWebContent content = new HackWebContent(getApplication().getApplicationContext());
 	        IWebContent content = new BetterWebContent(getApplication().getApplicationContext());

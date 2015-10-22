@@ -18,6 +18,7 @@
         android:gravity="center_vertical|center_horizontal"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:text="share name"
+        android:textIsSelectable="true"
         android:textStyle="italic"
         android:textSize="26sp" />
 
@@ -29,6 +30,7 @@
 	    android:gravity="center_vertical|center_horizontal"
 	    android:paddingTop="@dimen/activity_vertical_margin"
 	    android:text="link"
+	    android:textIsSelectable="true"
 	    android:textSize="24sp" />
 	
 	<TextView
@@ -48,6 +50,7 @@
         android:autoLink="web"
         android:gravity="center_vertical|center_horizontal"
         android:paddingTop="@dimen/activity_vertical_margin"
+        android:textIsSelectable="true"
         android:text="token"
         android:textSize="28sp" />
 

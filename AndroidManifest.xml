@@ -21,7 +21,6 @@
             android:name=".Httpd"
             android:enabled="true" >
         </service>
-
         <service
             android:name=".TokenDatabase"
             android:enabled="true" >
@@ -30,13 +29,13 @@
 
         <activity
             android:name=".ShareOverviewActivity"
-            android:label="@string/title_activity_share_overview" >
+            android:label="@string/title_activity_share_overview"
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
 		<activity
             android:name=".CreateShareActivity"
             android:label="@string/title_activity_create_share" >
@@ -56,22 +55,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="*/*"/>
+                <!-- <data android:scheme="content" />
+                <data android:scheme="file" /> -->
             </intent-filter>
-            <!-- <intent-filter>
-                <action android:name="android.intent.action.SENDTO" />
-                <action android:name="android.intent.action.SEND_MULTIPLE" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="*/*" />
-                <data android:scheme="content" />
-                <data android:scheme="file" />
-            </intent-filter> -->
         </activity>
-        
         <activity
             android:name=".ShareDetailsActivity"
-            android:label="@string/title_activity_share_details" >
+            android:label="@string/title_activity_share_details"
+            android:launchMode="singleTop" >
         </activity>
     </application>
 

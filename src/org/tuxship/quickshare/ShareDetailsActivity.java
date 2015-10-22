@@ -54,7 +54,14 @@ public class ShareDetailsActivity extends Activity {
 				startActivity(intent);
             }
         });
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		shareName = intent.getStringExtra(EXTRA_SHARE);
+		token = intent.getStringExtra(EXTRA_TOKEN);
 		
+		setupTextViews();
 	}
 	
 	private void setupTextViews() {

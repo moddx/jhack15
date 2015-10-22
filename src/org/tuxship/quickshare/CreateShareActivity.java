@@ -138,6 +138,7 @@ public class CreateShareActivity extends Activity {
 				Intent intent = new Intent(CreateShareActivity.this, ShareDetailsActivity.class);
 				intent.putExtra(ShareDetailsActivity.EXTRA_SHARE, shareName);
 				intent.putExtra(ShareDetailsActivity.EXTRA_TOKEN, token);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intent);
 			}
 		});

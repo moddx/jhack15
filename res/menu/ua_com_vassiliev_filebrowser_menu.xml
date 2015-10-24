@@ -5,7 +5,7 @@
 		android:id="@+id/action_show_hidden_files"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
-        android:actionLayout="@layout/show_hidden_switch_layout"
-        android:title="" />
-
+        android:actionViewClass="android.widget.Switch"
+        android:title="Hidden Files" />
+	
 </menu>

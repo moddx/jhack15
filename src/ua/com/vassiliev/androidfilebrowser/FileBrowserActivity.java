@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.tuxship.quickshare.R;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -37,6 +38,9 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckedTextView;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
@@ -53,7 +57,8 @@ public class FileBrowserActivity extends Activity {
 	public static final String startDirectoryParameter = "ua.com.vassiliev.androidfilebrowser.directoryPath";
 	public static final String returnDirectoryParameter = "ua.com.vassiliev.androidfilebrowser.directoryPathRet";
 	public static final String returnFileParameter = "ua.com.vassiliev.androidfilebrowser.filePathRet";
-	public static final String showCannotReadParameter = "ua.com.vassiliev.androidfilebrowser.showCannotRead";
+	public static final String showUnreadableFilesParameter = "ua.com.vassiliev.androidfilebrowser.showCannotRead";
+	public static final String showHiddenFilesParameter = "ua.com.vassiliev.androidfilebrowser.showHiddenFiles";
 	public static final String filterExtension = "ua.com.vassiliev.androidfilebrowser.filterExtension";
 
 	// Stores names of traversed directories
@@ -71,7 +76,8 @@ public class FileBrowserActivity extends Activity {
 
 	ArrayAdapter<Item> adapter;
 
-	private boolean showHiddenFilesAndDirs = true;
+	private boolean showUnreadableFiles = false;
+	private boolean showHiddenFiles = false;
 
 	private boolean directoryShownIsEmpty = false;
 
@@ -103,9 +109,14 @@ public class FileBrowserActivity extends Activity {
 			currentAction = SELECT_FILE;
 		}
 
-		showHiddenFilesAndDirs = thisInt.getBooleanExtra(
-				showCannotReadParameter, 
-				((Switch) findViewById(R.id.show_hidden_files_switch)).isChecked());
+		/*
+		 * Read default extra-values when available 
+		 */
+		showUnreadableFiles = thisInt.getBooleanExtra(
+				showUnreadableFilesParameter, false);
+		
+		showHiddenFiles = thisInt.getBooleanExtra(
+				showHiddenFilesParameter, false);
 
 		filterFileExtension = thisInt.getStringExtra(filterExtension);
 
@@ -117,6 +128,7 @@ public class FileBrowserActivity extends Activity {
 		this.initializeButtons();
 		this.initializeFileListView();
 		updateCurrentDirectoryTextView();
+		
 		Log.d(LOGTAG, path.getAbsolutePath());
 	}
 
@@ -231,6 +243,7 @@ public class FileBrowserActivity extends Activity {
 		LinearLayout.LayoutParams lParam = new LinearLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		lParam.setMargins(15, 5, 15, 5);
+		lView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		lView.setAdapter(this.adapter);
 		
 		lView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -296,19 +309,25 @@ public class FileBrowserActivity extends Activity {
 			FilenameFilter filter = new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String filename) {
-					File sel = new File(dir, filename);
-					boolean showReadableFile = showHiddenFilesAndDirs
-							|| sel.canRead();
+					File file = new File(dir, filename);
+					
+					/*
+					 * Should the file be shown in general?
+					 */
+					boolean showFile = 
+							(showUnreadableFiles || file.canRead()) &&
+							(showHiddenFiles || !file.getName().startsWith("."));
 			
-					// Filters based on whether the file is hidden or not
+					/*
+					 * Make sure that a file is a file and a dir is a dir.
+					 */
 					switch(currentAction) {
 						case SELECT_DIRECTORY:
-							return (sel.isDirectory() && showReadableFile);
+							return (file.isDirectory() && showFile);
 						case SELECT_FILE:
-							// If it is a file check the extension if provided
-							return (sel.isFile() && filterFileExtension != null)
-								? (showReadableFile && sel.getName().endsWith(filterFileExtension)) 
-								: (showReadableFile);
+							return (file.isFile() && filterFileExtension != null)
+								? (showFile && file.getName().endsWith(filterFileExtension))	// check the extension if filters are provided 
+								: (showFile);
 						default:
 							return true;
 					}
@@ -320,15 +339,15 @@ public class FileBrowserActivity extends Activity {
 			
 			for (int i = 0; i < fList.length; i++) {
 				// Convert into file path
-				File sel = new File(path, fList[i]);
+				File file = new File(path, fList[i]);
 //				Log.d(LOGTAG,
 //						"File:" + fList[i] + " readable:"
 //								+ (Boolean.valueOf(sel.canRead())).toString());
 				int drawableID = R.drawable.file_icon;
-				boolean canRead = sel.canRead();
+				boolean canRead = file.canRead();
 				
 				// Set drawables
-				if (sel.isDirectory()) {
+				if (file.isDirectory()) {
 					if (canRead) {
 						drawableID = R.drawable.folder_icon;
 					} else {
@@ -352,10 +371,48 @@ public class FileBrowserActivity extends Activity {
 	}
 
 	private void createFileListAdapter() {
+//		adapter 
+//		 = new ArrayAdapter<Item>(
+//				this,
+//				android.R.layout.select_dialog_item, 
+//				android.R.id.text1,
+//				fileList) {
+//			
+//			@Override
+//			public View getView(int position, View convertView, ViewGroup parent) {
+//				// creates view
+//				View view = super.getView(position, convertView, parent);
+//				TextView textView = (TextView) view
+//						.findViewById(android.R.id.text1);
+//				// put the image on the text view
+//				int drawableID = 0;
+//				if (fileList.get(position).icon != -1) {
+//					// If icon == -1, then directory is empty
+//					drawableID = fileList.get(position).icon;
+//				}
+//				textView.setCompoundDrawablesWithIntrinsicBounds(drawableID, 0,
+//						0, 0);
+//
+//				textView.setEllipsize(null);
+//
+//				// add margin between image and text (support various screen
+//				// densities)
+//				// int dp5 = (int) (5 *
+//				// getResources().getDisplayMetrics().density + 0.5f);
+//				int dp3 = (int) (3 * getResources().getDisplayMetrics().density + 0.5f);
+//			
+//				// TODO: change next line for empty directory, so text will be
+//				// centered
+//				textView.setCompoundDrawablePadding(dp3);
+//				textView.setBackgroundColor(Color.LTGRAY);
+//				return view;
+//			}
+//			
+//		};
 		adapter 
 		 = new ArrayAdapter<Item>(
 				this,
-				android.R.layout.select_dialog_item, 
+				R.layout.simple_selectable_list_item, 
 				android.R.id.text1,
 				fileList) {
 			
@@ -363,8 +420,9 @@ public class FileBrowserActivity extends Activity {
 			public View getView(int position, View convertView, ViewGroup parent) {
 				// creates view
 				View view = super.getView(position, convertView, parent);
-				TextView textView = (TextView) view
+				CheckedTextView textView = (CheckedTextView) view
 						.findViewById(android.R.id.text1);
+				
 				// put the image on the text view
 				int drawableID = 0;
 				if (fileList.get(position).icon != -1) {
@@ -390,12 +448,13 @@ public class FileBrowserActivity extends Activity {
 			}
 			
 		};
+//		adapter = new FileBrowserArrayAdapter(getApplicationContext(), R.layout.filebrowser_list_layout, fileList);
 	}
 
 	/*
 	 * Item Class
 	 */
-	private class Item {
+	public class Item {
 		public String file;
 		public int icon;
 //		public boolean canRead;
@@ -415,9 +474,21 @@ public class FileBrowserActivity extends Activity {
 	 * Item Comparator
 	 */
 	private class ItemFileNameComparator implements Comparator<Item> {
+		
+		private boolean isFolder(Item item) {
+			return item.icon == R.drawable.folder_icon ||
+					item.icon == R.drawable.folder_icon_light;
+		}
+		
 		@SuppressLint("DefaultLocale")
 		@Override
 		public int compare(Item lhs, Item rhs) {
+			if(isFolder(lhs) && !isFolder(rhs))
+				return -1;
+			
+			if(!isFolder(lhs) && isFolder(rhs))
+				return 1;
+			
 			return lhs.file.toLowerCase().compareTo(rhs.file.toLowerCase());
 		}
 	}
@@ -441,28 +512,28 @@ public class FileBrowserActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.ua_com_vassiliev_filebrowser_menu, menu);
+
+		/*
+		 * Toggle visibility of hidden files
+		 */
+		final MenuItem showHiddenFilesItem = menu.findItem(R.id.action_show_hidden_files);
+		final Switch showHiddenFilesSwitch = (Switch) showHiddenFilesItem.getActionView();
+		showHiddenFilesSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				Log.i("filebrowser", "Show Hidden Files - Switch toggled");
+				
+				showHiddenFiles = isChecked;
+				loadFileList();
+				adapter.notifyDataSetChanged();
+			}
+			
+		});
 		
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_show_hidden_files) {
-			showHiddenFilesAndDirs = ((Switch) 
-					findViewById(R.id.show_hidden_files_switch)).isChecked();
-			
-			// reload file list
-			loadFileList();
-			return true;
-		}
-		
-		return super.onOptionsItemSelected(item);
-	}
-	
 	public static long getFreeSpace(String path) {
 		StatFs stat = new StatFs(path);
 		long availSize = stat.getAvailableBlocksLong() 

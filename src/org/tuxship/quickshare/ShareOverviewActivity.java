@@ -196,22 +196,22 @@ public class ShareOverviewActivity extends Activity {
 	
 	private void addShare() {
 		/*
-		 * Open file selector
+		 * Open file selector - files will be obtained in onActivityResult
 		 */
 		Intent selectFileIntent = new Intent(
-				FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
+				FileBrowserActivity.INTENT_ACTION_SELECT_FILE,
 				null,
 				context,
 				FileBrowserActivity.class);
 		
-		selectFileIntent.putExtra(FileBrowserActivity.startDirectoryParameter, Environment.getExternalStorageDirectory().getAbsolutePath());
+		selectFileIntent.putExtra(
+				FileBrowserActivity.startDirectoryParameter, 
+				Environment.getExternalStorageDirectory().getAbsolutePath());
+		
+		selectFileIntent.putExtra(
+				FileBrowserActivity.showHiddenFilesParameter, false);
 		
 		startActivityForResult(selectFileIntent, REQUEST_CODE_PICK_FILES);
-		
-		
-		/*
-		 * Trigger CreateShareActiviy with files in onActivityResult
-		 */
 		
 	}
 	

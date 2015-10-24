@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import ua.com.vassiliev.androidfilebrowser.FileBrowserActivity;
 
 public class ShareOverviewActivity extends Activity {
 
@@ -35,6 +37,8 @@ public class ShareOverviewActivity extends Activity {
     boolean dbBound = false;
 
     boolean initialised = false;
+    
+    private final int REQUEST_CODE_PICK_FILES = 1;
     
     Runnable updateRunnable = new Runnable() {
         @Override
@@ -190,6 +194,51 @@ public class ShareOverviewActivity extends Activity {
 		deleteButton.setEnabled(tlayout.getChildCount() > 0);
 	}
 	
+	private void addShare() {
+		/*
+		 * Open file selector
+		 */
+		Intent selectFileIntent = new Intent(
+				FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
+				null,
+				context,
+				FileBrowserActivity.class);
+		
+		selectFileIntent.putExtra(FileBrowserActivity.startDirectoryParameter, Environment.getExternalStorageDirectory().getAbsolutePath());
+		
+		startActivityForResult(selectFileIntent, REQUEST_CODE_PICK_FILES);
+		
+		
+		/*
+		 * Trigger CreateShareActiviy with files in onActivityResult
+		 */
+		
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == REQUEST_CODE_PICK_FILES) {
+	            if(resultCode == this.RESULT_OK) {
+	            	String selectedFile = data.getStringExtra(
+	                        FileBrowserActivity.returnDirectoryParameter);
+//	            	String selectedFile = data.getStringExtra(
+//	                        FileBrowserActivity.returnFileParameter);
+	                Toast.makeText(
+	                    this, 
+	                    "Received path from file browser:" + selectedFile, 
+	                    Toast.LENGTH_LONG
+	                ).show(); 
+	            } else {
+	                Toast.makeText(
+	                    this, 
+	                    "Received NO result from file browser",
+	                    Toast.LENGTH_LONG)
+	                .show(); 
+	            }
+	        }
+	        super.onActivityResult(requestCode, resultCode, data);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -206,6 +255,10 @@ public class ShareOverviewActivity extends Activity {
 		int id = item.getItemId();
 		if (id == R.id.action_refresh) {
 			updateRunnable.run();
+			return true;
+		}
+		if(id == R.id.action_add_share) {
+			addShare();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

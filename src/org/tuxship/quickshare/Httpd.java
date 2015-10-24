@@ -93,7 +93,7 @@ public class Httpd extends Service
 	    	Log.i("quickshare", "SERVING A REQUEST");
 	        Map<String, String> parms = session.getParms();
 	        
-
+	        
 //        	IWebContent content = new HackWebContent(getApplication().getApplicationContext());
 	        IWebContent content = new BetterWebContent(getApplication().getApplicationContext());
         	

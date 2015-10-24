@@ -5,7 +5,13 @@
     <item
         android:id="@+id/action_refresh"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        android:showAsAction="ifRoom"
         android:title="@string/action_refresh"/>
+    
+    <item 
+        android:id="@+id/action_add_share"
+        android:orderInCategory="200"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_add_share" />
 
 </menu>

@@ -13,5 +13,6 @@
     <string name="title_activity_share_details">Share Details</string>
     <string name="logtag">quickshare</string>
     <string name="token_heading">Access Token:</string>
+    <string name="action_add_share">Add Share</string>
 
 </resources>

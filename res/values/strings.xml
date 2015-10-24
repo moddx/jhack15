@@ -12,5 +12,6 @@
     <string name="action_refresh">Refresh</string>
     <string name="title_activity_share_details">Share Details</string>
     <string name="logtag">quickshare</string>
+    <string name="token_heading">Access Token:</string>
 
 </resources>

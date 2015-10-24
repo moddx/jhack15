@@ -61,6 +61,7 @@ public final class R {
         public static final int title_activity_create_share=0x7f050002;
         public static final int title_activity_share_details=0x7f050009;
         public static final int title_activity_share_overview=0x7f050005;
+        public static final int token_heading=0x7f05000b;
     }
     public static final class style {
         /** 

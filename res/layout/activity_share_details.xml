@@ -40,7 +40,7 @@
         android:autoLink="web"
         android:gravity="center_vertical|center_horizontal"
         android:paddingTop="@dimen/activity_vertical_margin"
-        android:text="Access Token:"
+        android:text="@string/token_heading"
         android:textSize="20sp" />
 	
 	<TextView

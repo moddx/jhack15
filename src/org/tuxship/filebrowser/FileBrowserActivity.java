@@ -93,17 +93,14 @@ public class FileBrowserActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// In case of
-		// ua.com.vassiliev.androidfilebrowser.SELECT_DIRECTORY_ACTION
-		// Expects com.mburman.fileexplore.directoryPath parameter to
-		// point to the start folder.
-		// If empty or null, will start from SDcard root.
 		setContentView(R.layout.filebrowser_layout);
 
-		// Set action for this activity
+		/*
+		 * Obtain action
+		 */
 		Intent thisInt = this.getIntent();
-		currentAction = SELECT_DIRECTORY;// This would be a default action in
-											// case not set by intent
+		currentAction = SELECT_DIRECTORY;		// default action
+		
 		if (thisInt.getAction().equalsIgnoreCase(INTENT_ACTION_SELECT_FILE)) {
 			Log.d(LOGTAG, "SELECT ACTION - SELECT FILE");
 			currentAction = SELECT_FILE;
@@ -132,13 +129,17 @@ public class FileBrowserActivity extends Activity {
 		Log.d(LOGTAG, path.getAbsolutePath());
 	}
 
-	
+	/*
+	 * In case of SELECT_DIRECTORY_ACTION expects directoryPath-Extra
+	 * parameter to point to the start folder.
+     * If empty or null, will start from SDcard root.
+	 */
 	private void setInitialDirectory() {
 		Intent thisInt = this.getIntent();
 		String requestedStartDir = thisInt
 				.getStringExtra(startDirectoryParameter);
 
-		if (requestedStartDir != null && requestedStartDir.length() > 0) {// if(requestedStartDir!=null
+		if (requestedStartDir != null && requestedStartDir.length() > 0) {
 			File tempFile = new File(requestedStartDir);
 			if (tempFile.isDirectory())
 				this.path = tempFile;

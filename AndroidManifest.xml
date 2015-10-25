@@ -67,7 +67,7 @@
         </activity>
 
         <activity
-            android:name="ua.com.vassiliev.androidfilebrowser.FileBrowserActivity"
+            android:name="org.tuxship.filebrowser.FileBrowserActivity"
             android:label="File browser"
             android:configChanges="orientation|keyboardHidden" >
             <intent-filter>

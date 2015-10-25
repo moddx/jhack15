@@ -1,8 +1,9 @@
-package ua.com.vassiliev.androidfilebrowser;
+package org.tuxship.filebrowser;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.tuxship.filebrowser.FileBrowserActivity.Item;
 import org.tuxship.quickshare.R;
 
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.Item;
 
 public class FileBrowserArrayAdapter extends ArrayAdapter<Item> {
 

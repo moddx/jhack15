@@ -1,4 +1,4 @@
-package ua.com.vassiliev.androidfilebrowser;
+package org.tuxship.filebrowser;
 
 //Heavily based on code from
 //https://github.com/mburman/Android-File-Explore
@@ -98,7 +98,7 @@ public class FileBrowserActivity extends Activity {
 		// Expects com.mburman.fileexplore.directoryPath parameter to
 		// point to the start folder.
 		// If empty or null, will start from SDcard root.
-		setContentView(R.layout.ua_com_vassiliev_filebrowser_layout);
+		setContentView(R.layout.filebrowser_layout);
 
 		// Set action for this activity
 		Intent thisInt = this.getIntent();
@@ -511,7 +511,7 @@ public class FileBrowserActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.ua_com_vassiliev_filebrowser_menu, menu);
+		getMenuInflater().inflate(R.menu.filebrowser_menu, menu);
 
 		/*
 		 * Toggle visibility of hidden files

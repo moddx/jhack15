@@ -2,6 +2,7 @@ package org.tuxship.quickshare;
 
 import java.util.ArrayList;
 
+import org.tuxship.filebrowser.FileBrowserActivity;
 import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
@@ -25,7 +26,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import ua.com.vassiliev.androidfilebrowser.FileBrowserActivity;
 
 public class ShareOverviewActivity extends Activity {
 

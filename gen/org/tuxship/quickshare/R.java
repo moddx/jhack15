@@ -42,7 +42,7 @@ public final class R {
         public static final int linkText=0x7f080004;
         public static final int name=0x7f080010;
         public static final int scrollView=0x7f080008;
-        public static final int selectCurrentDirectoryButton=0x7f08000c;
+        public static final int selectButton=0x7f08000c;
         public static final int shareNameInput=0x7f080001;
         public static final int shareText=0x7f080003;
         public static final int submitBtn=0x7f080002;

@@ -49,10 +49,17 @@ public class FileBrowserArrayAdapter extends ArrayAdapter<Item> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		// put the image on the text view
+		Item item = fileList.get(position);
+		
+		/*
+		 * Determine icon and add it to the textview
+		 */
 		int drawableID = 0;
-		if (fileList.get(position).icon != -1) {	// else the directory is empty
-			drawableID = fileList.get(position).icon;
+		if(!item.isEmpty) {
+			if(item.isDirectory)
+				drawableID = (item.canRead) ? R.drawable.folder_icon : R.drawable.folder_icon_light;
+			else
+				drawableID = R.drawable.file_icon;
 		}
 		holder.fileNameView.setCompoundDrawablesWithIntrinsicBounds(drawableID, 0,
 				0, 0);

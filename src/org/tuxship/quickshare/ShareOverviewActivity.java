@@ -199,7 +199,7 @@ public class ShareOverviewActivity extends Activity {
 		 * Open file selector - files will be obtained in onActivityResult
 		 */
 		Intent selectFileIntent = new Intent(
-				FileBrowserActivity.INTENT_ACTION_SELECT_FILE,
+				FileBrowserActivity.INTENT_ACTION_SELECT_FILE_MULTIPLE,
 				null,
 				context,
 				FileBrowserActivity.class);
@@ -218,11 +218,9 @@ public class ShareOverviewActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == REQUEST_CODE_PICK_FILES) {
-	            if(resultCode == this.RESULT_OK) {
-	            	String selectedFile = data.getStringExtra(
-	                        FileBrowserActivity.returnDirectoryParameter);
-//	            	String selectedFile = data.getStringExtra(
-//	                        FileBrowserActivity.returnFileParameter);
+	            if(resultCode == Activity.RESULT_OK) {
+	            	ArrayList<String> selectedFile = data.getStringArrayListExtra(
+	                        FileBrowserActivity.returnFileListParameter);
 	                Toast.makeText(
 	                    this, 
 	                    "Received path from file browser:" + selectedFile, 
@@ -231,7 +229,7 @@ public class ShareOverviewActivity extends Activity {
 	            } else {
 	                Toast.makeText(
 	                    this, 
-	                    "Received NO result from file browser",
+	                    "Received NO valid result from file browser",
 	                    Toast.LENGTH_LONG)
 	                .show(); 
 	            }

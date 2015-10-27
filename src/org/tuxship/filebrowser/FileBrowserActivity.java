@@ -13,6 +13,7 @@ package org.tuxship.filebrowser;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -24,7 +25,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
@@ -52,11 +55,13 @@ public class FileBrowserActivity extends Activity {
 	// Intent Action Constants
 	public static final String INTENT_ACTION_SELECT_DIR = "ua.com.vassiliev.androidfilebrowser.SELECT_DIRECTORY_ACTION";
 	public static final String INTENT_ACTION_SELECT_FILE = "ua.com.vassiliev.androidfilebrowser.SELECT_FILE_ACTION";
+	public static final String INTENT_ACTION_SELECT_FILE_MULTIPLE = "ua.com.vassiliev.androidfilebrowser.SELECT_FILE_MULTIPLE_ACTION";
 
 	// Intent parameters names constants
 	public static final String startDirectoryParameter = "ua.com.vassiliev.androidfilebrowser.directoryPath";
 	public static final String returnDirectoryParameter = "ua.com.vassiliev.androidfilebrowser.directoryPathRet";
 	public static final String returnFileParameter = "ua.com.vassiliev.androidfilebrowser.filePathRet";
+	public static final String returnFileListParameter = "ua.com.vassiliev.androidfilebrowser.fileListPathsRet";
 	public static final String showUnreadableFilesParameter = "ua.com.vassiliev.androidfilebrowser.showCannotRead";
 	public static final String showHiddenFilesParameter = "ua.com.vassiliev.androidfilebrowser.showHiddenFiles";
 	public static final String filterExtension = "ua.com.vassiliev.androidfilebrowser.filterExtension";
@@ -69,10 +74,15 @@ public class FileBrowserActivity extends Activity {
 
 	private static final String LOGTAG = "F_PATH";
 
-	private List<Item> fileList = new ArrayList<Item>();
+	private ArrayList<Item> fileList = new ArrayList<Item>();
 	private File path = null;
-	private String chosenFile;
+//	private String chosenFile;
+	private ArrayList<String> chosenFiles = new ArrayList<String>();
 	// private static final int DIALOG_LOAD_FILE = 1000;
+	
+	private static final String EMPTY_DIRECTORY = "Directory is empty";
+	
+	private Drawable checkBoxDrawable = null;
 
 	ArrayAdapter<Item> adapter;
 
@@ -87,6 +97,7 @@ public class FileBrowserActivity extends Activity {
 	private static int currentAction = -1;
 	private static final int SELECT_DIRECTORY = 1;
 	private static final int SELECT_FILE = 2;
+	private static final int SELECT_FILE_MULTIPLE = 3;
 
 	
 	
@@ -104,8 +115,11 @@ public class FileBrowserActivity extends Activity {
 		if (thisInt.getAction().equalsIgnoreCase(INTENT_ACTION_SELECT_FILE)) {
 			Log.d(LOGTAG, "SELECT ACTION - SELECT FILE");
 			currentAction = SELECT_FILE;
+		} else if(thisInt.getAction().equalsIgnoreCase(INTENT_ACTION_SELECT_FILE_MULTIPLE)) {
+			Log.d(LOGTAG, "SELECT ACTION - SELECT FILE MULTIPLE");
+			currentAction = SELECT_FILE_MULTIPLE;
 		}
-
+		
 		/*
 		 * Read default extra-values when available 
 		 */
@@ -117,6 +131,16 @@ public class FileBrowserActivity extends Activity {
 
 		filterFileExtension = thisInt.getStringExtra(filterExtension);
 
+		/*
+		 * Obtain drawable once
+		 */
+//		int[] drawAttrs = { android.R.attr.listChoiceIndicatorMultiple };
+//		TypedArray tarr = this.getTheme().obtainStyledAttributes(drawAttrs);
+//		checkBoxDrawable = tarr.getDrawable(0);
+		
+		/*
+		 * Setup Stuff
+		 */
 		setInitialDirectory();
 
 		parseDirectoryPath();
@@ -156,13 +180,12 @@ public class FileBrowserActivity extends Activity {
 
 	private void parseDirectoryPath() {
 		pathDirsList.clear();
+		
 		String pathString = path.getAbsolutePath();
 		String[] parts = pathString.split("/");
-		int i = 0;
-		while (i < parts.length) {
+
+		for(int i = 0; i < parts.length; i++)
 			pathDirsList.add(parts[i]);
-			i++;
-		}
 	}
 
 	private void initializeButtons() {
@@ -178,11 +201,11 @@ public class FileBrowserActivity extends Activity {
 			}
 		});
 
-		Button selectFolderButton = (Button) this
-				.findViewById(R.id.selectCurrentDirectoryButton);
+		Button selectButton = (Button) this
+				.findViewById(R.id.selectButton);
 		
 		if (currentAction == SELECT_DIRECTORY) {
-			selectFolderButton.setOnClickListener(new OnClickListener() {
+			selectButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					Log.d(LOGTAG, "onclick for selectFolderButton");
@@ -190,16 +213,24 @@ public class FileBrowserActivity extends Activity {
 				}
 			});
 		} else {
-			selectFolderButton.setVisibility(View.GONE);
+			selectButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Log.d(LOGTAG, "onclick for selectFolderButton");
+					returnFileFinishActivity(chosenFiles);
+				}
+			});
 		}
 	}
 
 	private void loadDirectoryUp() {
 		// present directory removed from list
 		String s = pathDirsList.remove(pathDirsList.size() - 1);
+		
 		// path modified to exclude present directory
 		path = new File(path.toString().substring(0,
 				path.toString().lastIndexOf(s)));
+		
 		fileList.clear();
 	}
 
@@ -226,9 +257,11 @@ public class FileBrowserActivity extends Activity {
 				formattedSpaceString = "NON Writable";
 		}
 
-		((Button) this.findViewById(R.id.selectCurrentDirectoryButton))
-				.setText("Select\n[" + formattedSpaceString
-						+ "]");
+		((Button) this.findViewById(R.id.selectButton))
+				.setText( 	(currentAction == SELECT_DIRECTORY)
+						  	? "Select\n[" + formattedSpaceString + "]"
+						  	: "Select"
+						);
 
 		((TextView) this.findViewById(R.id.currentDirectoryTextView))
 				.setText("Current directory: " + curDirString);
@@ -246,40 +279,54 @@ public class FileBrowserActivity extends Activity {
 		lParam.setMargins(15, 5, 15, 5);
 		lView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		lView.setAdapter(this.adapter);
+		lView.setClickable(false);
 		
-		lView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				chosenFile = fileList.get(position).file;
-				File sel = new File(path + "/" + chosenFile);
-				
-				Log.d(LOGTAG, "Clicked:" + chosenFile);
-				
-				if (sel.isDirectory()) {
-					if (sel.canRead()) {	// Adds chosen directory to list
-						pathDirsList.add(chosenFile);
-						path = new File(sel + "");
-						
-						Log.d(LOGTAG, "Just reloading the list");
-						loadFileList();
-						
-						adapter.notifyDataSetChanged();
-						updateCurrentDirectoryTextView();
-						
-						Log.d(LOGTAG, path.getAbsolutePath());
-					} else {
-						showToast("Path does not exist or cannot be read");
-					}
-				} else {	// File picked or an empty directory message clicked
-					Log.d(LOGTAG, "item clicked");
-					if (!directoryShownIsEmpty) {
-						Log.d(LOGTAG, "File selected:" + chosenFile);
-						returnFileFinishActivity(sel.getAbsolutePath());
-					}
-				}
-			}
-		});
+//		lView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view,
+//					int position, long id) {
+////				chosenFile = fileList.get(position).file;
+//				Item curItem = fileList.get(position);
+//				String curFullPath = path + "/" + curItem.file;
+//				
+//				CheckedTextView textView = (CheckedTextView) view;
+//				
+//				Log.d(LOGTAG, "Clicked:" + curItem.file);
+//				
+//				if (curItem.isDirectory) {
+//					textView.setChecked(false);
+//					
+//					if (curItem.canRead && !curItem.isEmpty) {	// Adds chosen directory to list
+//						pathDirsList.add(curItem.file);
+//						path = new File(curFullPath);
+//						
+//						Log.d(LOGTAG, "Just reloading the list");
+//						loadFileList();
+//						
+//						adapter.notifyDataSetChanged();
+//						updateCurrentDirectoryTextView();
+//						
+//						Log.d(LOGTAG, path.getAbsolutePath());
+////					} else {
+////						showToast("Path does not exist or cannot be read");
+//					}
+//				} else {	// File picked or an empty directory message clicked
+//					Log.d(LOGTAG, "item clicked");
+//					if (!directoryShownIsEmpty && textView.isClickable()) {
+//						Log.d(LOGTAG, "File selected:" + curItem.file);
+////						returnFileFinishActivity(file.getAbsolutePath());
+//						
+////						if(!textView.isChecked()) {
+////							chosenFiles.add(curFullPath);
+////							textView.setChecked(true);
+////						} else {
+////							chosenFiles.remove(curFullPath);
+////							textView.setChecked(false);
+////						}
+//					}
+//				}
+//			}
+//		});
 		
 	}
 
@@ -290,9 +337,10 @@ public class FileBrowserActivity extends Activity {
 		this.finish();
 	}
 
-	private void returnFileFinishActivity(String filePath) {
+//	private void returnFileFinishActivity(String filePath) {
+	private void returnFileFinishActivity(ArrayList<String> filePaths) {
 		Intent retIntent = new Intent();
-		retIntent.putExtra(returnFileParameter, filePath);
+		retIntent.putStringArrayListExtra(returnFileListParameter, filePaths);
 		this.setResult(RESULT_OK, retIntent);
 		this.finish();
 	}
@@ -303,8 +351,10 @@ public class FileBrowserActivity extends Activity {
 		} catch (SecurityException e) {
 			Log.e(LOGTAG, "unable to write on the sd card ");
 		}
-		fileList.clear();
 
+		fileList.clear();
+		chosenFiles.clear();
+		
 		if (path.exists() && path.canRead()) {
 			
 			FilenameFilter filter = new FilenameFilter() {
@@ -326,6 +376,7 @@ public class FileBrowserActivity extends Activity {
 						case SELECT_DIRECTORY:
 							return (file.isDirectory() && showFile);
 						case SELECT_FILE:
+						case SELECT_FILE_MULTIPLE:
 							return (file.isFile() && filterFileExtension != null)
 								? (showFile && file.getName().endsWith(filterFileExtension))	// check the extension if filters are provided 
 								: (showFile);
@@ -344,24 +395,24 @@ public class FileBrowserActivity extends Activity {
 //				Log.d(LOGTAG,
 //						"File:" + fList[i] + " readable:"
 //								+ (Boolean.valueOf(sel.canRead())).toString());
-				int drawableID = R.drawable.file_icon;
-				boolean canRead = file.canRead();
+//				int drawableID = R.drawable.file_icon;
+//				boolean canRead = file.canRead();
 				
 				// Set drawables
-				if (file.isDirectory()) {
-					if (canRead) {
-						drawableID = R.drawable.folder_icon;
-					} else {
-						drawableID = R.drawable.folder_icon_light;
-					}
-				}
+//				if (file.isDirectory()) {
+//					if (canRead) {
+//						drawableID = R.drawable.folder_icon;
+//					} else {
+//						drawableID = R.drawable.folder_icon_light;
+//					}
+//				}
 				
-				fileList.add(i, new Item(fList[i], drawableID, canRead));
+				fileList.add(i, new Item(fList[i], file.isDirectory(), file.canRead()));
 			}
 			
 			if (fileList.size() == 0) {
 				this.directoryShownIsEmpty = true;
-				fileList.add(0, new Item("Directory is empty", -1, true));
+				fileList.add(0, new Item(EMPTY_DIRECTORY, true, true, true));
 			} else {
 				Collections.sort(fileList, new ItemFileNameComparator());
 			}
@@ -421,14 +472,66 @@ public class FileBrowserActivity extends Activity {
 			public View getView(int position, View convertView, ViewGroup parent) {
 				// creates view
 				View view = super.getView(position, convertView, parent);
+				
 				CheckedTextView textView = (CheckedTextView) view
 						.findViewById(android.R.id.text1);
 				
-				// put the image on the text view
+				if(checkBoxDrawable == null) {
+					checkBoxDrawable = textView.getCheckMarkDrawable();
+				}
+//				textView.setChecked(false);
+				
+				if(fileList.get(position).isDirectory) {
+					textView.setCheckMarkDrawable(null);
+					textView.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View _v) {
+							CheckedTextView view = (CheckedTextView) _v;
+							view.setChecked(false);
+							
+							Item onClickItem = FileBrowserActivity.this.getItem(view.getText().toString());
+							
+							if (onClickItem.canRead && !onClickItem.isEmpty) {	// Adds chosen directory to list
+								pathDirsList.add(onClickItem.file);
+								path = new File(path + "/" + onClickItem.file);
+								
+								Log.d(LOGTAG, "Just reloading the list");
+								loadFileList();
+								
+								adapter.notifyDataSetChanged();
+								updateCurrentDirectoryTextView();
+								
+								Log.d(LOGTAG, path.getAbsolutePath());
+							}
+						}
+						
+					});
+				} else {
+					textView.setCheckMarkDrawable(checkBoxDrawable);
+					textView.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View _v) {
+							CheckedTextView v = (CheckedTextView) _v;
+							v.setChecked(true);
+							chosenFiles.add(v.getText().toString());
+						}
+						
+					});
+				}
+				
+				Item item = fileList.get(position);
+				
+				/*
+				 * Determine icon and add it to the textview
+				 */
 				int drawableID = 0;
-				if (fileList.get(position).icon != -1) {
-					// If icon == -1, then directory is empty
-					drawableID = fileList.get(position).icon;
+				if(!item.isEmpty) {
+					if(item.isDirectory)
+						drawableID = (item.canRead) ? R.drawable.folder_icon : R.drawable.folder_icon_light;
+					else
+						drawableID = R.drawable.file_icon;
 				}
 				textView.setCompoundDrawablesWithIntrinsicBounds(drawableID, 0,
 						0, 0);
@@ -443,6 +546,11 @@ public class FileBrowserActivity extends Activity {
 			
 				// TODO: change next line for empty directory, so text will be
 				// centered
+				if(textView.getText().equals(EMPTY_DIRECTORY)) {
+					textView.setCheckMarkDrawable(null);
+					textView.setClickable(false);
+				}
+				
 				textView.setCompoundDrawablePadding(dp3);
 				textView.setBackgroundColor(Color.LTGRAY);
 				return view;
@@ -451,43 +559,71 @@ public class FileBrowserActivity extends Activity {
 		};
 //		adapter = new FileBrowserArrayAdapter(getApplicationContext(), R.layout.filebrowser_list_layout, fileList);
 	}
+	
+	private Item getItem(int position) {
+		return fileList.get(position);
+	}
+	
+	private Item getItem(String name) {
+		int index = Arrays.binarySearch(fileList.toArray(new Item[0]), new Item(name, false, false), new ItemFileNameStringComparator());
+		
+		if(index < 0)
+			throw new IndexOutOfBoundsException("Cannot getItem() for name '" + name + "'");
+		
+		return fileList.get(index);
+	}
 
 	/*
 	 * Item Class
 	 */
 	public class Item {
 		public String file;
-		public int icon;
-//		public boolean canRead;
+//		public int icon;
+		public boolean isDirectory;
+		public boolean isEmpty;
+		public boolean canRead;
 
-		public Item(String file, Integer icon, boolean canRead) {
+		public Item(String file, boolean isDirectory, boolean canRead) {
 			this.file = file;
-			this.icon = icon;
+			this.isDirectory = isDirectory;
+			this.canRead = canRead;
+			this.isEmpty = false;
 		}
 
+		public Item(String file, boolean isDirectory, boolean canRead, boolean isEmpty) {
+			this.file = file;
+			this.isDirectory = isDirectory;
+			this.canRead = canRead;
+			this.isEmpty = isEmpty;
+		}
+		
 		@Override
 		public String toString() {
 			return file;
 		}
 	}
 
+	
+	private class ItemFileNameStringComparator implements Comparator<Item> {
+		@SuppressLint("DefaultLocale")
+		@Override
+		public int compare(Item lhs, Item rhs) {
+			return lhs.file.toLowerCase().compareTo(rhs.file.toLowerCase());
+		}
+	}
+	
 	/*
 	 * Item Comparator
 	 */
 	private class ItemFileNameComparator implements Comparator<Item> {
 		
-		private boolean isFolder(Item item) {
-			return item.icon == R.drawable.folder_icon ||
-					item.icon == R.drawable.folder_icon_light;
-		}
-		
 		@SuppressLint("DefaultLocale")
 		@Override
 		public int compare(Item lhs, Item rhs) {
-			if(isFolder(lhs) && !isFolder(rhs))
+			if(lhs.isDirectory && !rhs.isDirectory)
 				return -1;
 			
-			if(!isFolder(lhs) && isFolder(rhs))
+			if(!lhs.isDirectory && rhs.isDirectory)
 				return 1;
 			
 			return lhs.file.toLowerCase().compareTo(rhs.file.toLowerCase());

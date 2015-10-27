@@ -56,7 +56,7 @@
             android:padding="0dp" >
 
             <Button
-                android:id="@+id/selectCurrentDirectoryButton"
+                android:id="@+id/selectButton"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"

@@ -23,7 +23,7 @@ import android.util.Log;
 public class TokenDatabase extends Service {
 	public String FILENAME = "token_database";
 
-	private final int tokenLength = 6;
+	public static final int tokenLength = 6;
 
 	// Binder given to clients
     private final IBinder binder = new LocalBinder();

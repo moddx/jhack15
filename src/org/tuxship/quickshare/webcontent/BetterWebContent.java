@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.tuxship.quickshare.Httpd;
 import org.tuxship.quickshare.TokenDatabase;
 
 import android.content.Context;
@@ -43,7 +44,7 @@ public class BetterWebContent implements IWebContent {
 
 	@Override
 	public String generatePage(TokenDatabase dbService, Map<String, String> parms) {
-		final String token = parms.get("token");
+		final String token = parms.get(Httpd.GET_TOKEN);
 
 		/*
 		 * Read index.html template

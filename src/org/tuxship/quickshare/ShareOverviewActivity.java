@@ -76,6 +76,8 @@ public class ShareOverviewActivity extends Activity {
 		 */
         Intent dbIntent = new Intent(this, TokenDatabase.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        updateRows();
 	}
 	
 	@Override
@@ -219,13 +221,19 @@ public class ShareOverviewActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == REQUEST_CODE_PICK_FILES) {
 	            if(resultCode == Activity.RESULT_OK) {
-	            	ArrayList<String> selectedFile = data.getStringArrayListExtra(
+	            	ArrayList<String> selectedFiles = data.getStringArrayListExtra(
 	                        FileBrowserActivity.returnFileListParameter);
-	                Toast.makeText(
+	                
+	            	Toast.makeText(
 	                    this, 
-	                    "Received path from file browser:" + selectedFile, 
+	                    "Adding:" + selectedFiles, 
 	                    Toast.LENGTH_LONG
-	                ).show(); 
+	                ).show();
+	            	
+	            	Intent createIntent = new Intent(context, CreateShareActivity.class);
+	            	createIntent.putStringArrayListExtra(CreateShareActivity.EXTRA_FILE_LIST, selectedFiles);
+					
+	            	startActivity(createIntent);
 	            } else {
 	                Toast.makeText(
 	                    this, 

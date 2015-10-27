@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class CreateShareActivity extends Activity {
+
+	public static final String EXTRA_FILE_LIST = "org.tuxship.quickshare.CreateShareActivity.EXTRA_FILE_LIST";
 	
 	Button submitBtn;
 	EditText shareNameInput; 
@@ -28,7 +30,7 @@ public class CreateShareActivity extends Activity {
 	TokenDatabase dbService;
 	boolean dbBound = false;
 	
-	ArrayList<Uri> files;
+	ArrayList<String> files;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +42,30 @@ public class CreateShareActivity extends Activity {
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
 		
 		Intent intent = getIntent();
+		
+		/*
+		 * Try to receive file list via extra
+		 */
+		files = intent.getStringArrayListExtra(EXTRA_FILE_LIST);
+		if(files != null) {
+			setup();
+			return;
+		}
+		
+		/*
+		 * Otherwise receive files via SEND action
+		 */
 		String action = intent.getAction();
 		String type = intent.getType();
 		
 		Log.i("shareintent", action);
 		Log.i("shareintent", type);
-		
+
+		ArrayList<Uri> uris = new ArrayList<Uri>();
 		if(action.equals("android.intent.action.SEND")) {
-			files = new ArrayList<Uri>();
 			Uri receivedUri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
 			
-			files.add(receivedUri);
+			uris.add(receivedUri);
 			
 			if(receivedUri == null)
 				Log.i("shareintent", "receivedUri is null");
@@ -58,11 +73,13 @@ public class CreateShareActivity extends Activity {
 				Log.i("shareintent", receivedUri.getPath());
 			
 		} else if (action.equals("android.intent.action.SEND_MULTIPLE")) {
-			files = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+			uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 		
-			for(Uri f : files)
-				Log.i("shareintent", f.getPath());
+			for(Uri uri : uris)
+				Log.i("shareintent", uri.getPath());
 		}
+		
+		files = convertUris(uris);
 		
 //		  // Figure out what to do based on the intent type
 //	    if (intent.getType().indexOf("image/") != -1) {
@@ -118,23 +135,20 @@ public class CreateShareActivity extends Activity {
 				if(shareName.equals(""))
 					return;
 				
-				ArrayList<String> paths = convertUris(files);
-				
 				/*
 				 * Store in database
 				 */
 				String token = "";
-				if(dbBound && paths != null) {
-					token = dbService.addShare(shareName, paths);
+				if(dbBound && files != null) {
+					token = dbService.addShare(shareName, files);
 				} else {
-					Log.w("shareintent", "Could not store new share! dbBound: " + dbBound + " paths count: " + paths.size());
+					Log.w("shareintent", "Could not store new share! dbBound: " + dbBound + " paths count: " + files.size());
 				}
 				
 				
 				/*  
 				 *  Launch ShareActivity
 				 */
-				
 				Intent intent = new Intent(CreateShareActivity.this, ShareDetailsActivity.class);
 				intent.putExtra(ShareDetailsActivity.EXTRA_SHARE, shareName);
 				intent.putExtra(ShareDetailsActivity.EXTRA_TOKEN, token);
@@ -144,6 +158,11 @@ public class CreateShareActivity extends Activity {
 		});
 	}
 	
+	/*
+	 * Converts a list of Uri's to a list of Strings with the absolute path of the files.
+	 * 
+	 * Uses the Uri.getPath() method.
+	 */
 	private ArrayList<String> convertUris(ArrayList<Uri> uris) {
 		ArrayList<String> paths = new ArrayList<String>();
 		

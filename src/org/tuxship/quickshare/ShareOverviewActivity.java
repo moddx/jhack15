@@ -27,6 +27,15 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * The main activity that lists all existing shares.
+ * 
+ * Clicking on a share opens a ShareDetailsActivity with more information.
+ * Shares can also be checked and deleted via a button.
+ * 
+ * Furthermore you can add new shares from within the ShareOverviewActivity,
+ * which starts a simple filebrowser.
+ */
 public class ShareOverviewActivity extends Activity {
 
 	Context context;
@@ -47,6 +56,14 @@ public class ShareOverviewActivity extends Activity {
         }
     };
 	
+    /*
+     * Sets up some class variables and starts the database server and webserver.
+     * Both servers are marked as sticky (they should keep running and launch 
+     * again after restart).
+     * 
+     * (non-Javadoc)
+     * @see android.app.Activity#onCreate(android.os.Bundle)
+     */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -67,6 +84,14 @@ public class ShareOverviewActivity extends Activity {
 		startService(new Intent(this, Httpd.class));
 	}
 	
+	/*
+	 * Ensures database connection on start / resume of the activity
+	 * and updates the share list, just in case (needed when 
+	 * transitioning from CreateShareActivity to ShareOverviewActivity).
+	 * 
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onStart()
+	 */
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -77,9 +102,15 @@ public class ShareOverviewActivity extends Activity {
         Intent dbIntent = new Intent(this, TokenDatabase.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
         
-        updateRows();
+        updateRunnable.run();
 	}
 	
+	/*
+	 * Disconnects from the database when pausing.
+	 * 
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -93,6 +124,12 @@ public class ShareOverviewActivity extends Activity {
         }
 	}
 	
+	/*
+	 * Disconnects from the database on exit.
+	 * 
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -105,6 +142,11 @@ public class ShareOverviewActivity extends Activity {
         }
     }
 
+    /**
+     * Do not call directly, but using the updateRunnable instead
+     * 
+     * e.g.: updateRunnable.run();
+     */
 	private void updateRows() {
 		if(dbBound) {
 			/*
@@ -159,6 +201,10 @@ public class ShareOverviewActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * A placeholder that is shown instead of the sharelist,
+	 * in case no shares exist.
+	 */
 	private void noSharesPlaceholder() {
 		TableRow row = new TableRow(context);
 		
@@ -171,7 +217,12 @@ public class ShareOverviewActivity extends Activity {
 		tlayout.addView(row);
 	}
 	
-	public void deleteShares(View v) {
+	/**
+	 * Deletes all shares whose corresponding checkboxes are checked.
+	 * 
+	 * @param _v unused parameter; needed because the function is 'called' from an xml layout file.
+	 */
+	public void deleteShares(View _v) {
 		for(int i = 0; i < tlayout.getChildCount();) {
 			TableRow row = (TableRow) tlayout.getChildAt(i);
 			
@@ -196,10 +247,12 @@ public class ShareOverviewActivity extends Activity {
 		deleteButton.setEnabled(tlayout.getChildCount() > 0);
 	}
 	
+	/**
+	 * Opens a simple filebrowser to select files for a new share.
+	 * 
+	 * The file paths are provided in the onActivityResult() method.
+	 */
 	private void addShare() {
-		/*
-		 * Open file selector - files will be obtained in onActivityResult
-		 */
 		Intent selectFileIntent = new Intent(
 				FileBrowserActivity.INTENT_ACTION_SELECT_FILE_MULTIPLE,
 				null,
@@ -208,7 +261,7 @@ public class ShareOverviewActivity extends Activity {
 		
 		selectFileIntent.putExtra(
 				FileBrowserActivity.startDirectoryParameter, 
-				Environment.getExternalStorageDirectory().getAbsolutePath());
+				Environment.getExternalStorageDirectory().getAbsolutePath());		// TODO fix this for devices without sd card
 		
 		selectFileIntent.putExtra(
 				FileBrowserActivity.showHiddenFilesParameter, false);
@@ -217,6 +270,12 @@ public class ShareOverviewActivity extends Activity {
 		
 	}
 	
+	/*
+	 * Handles results of startActivityForResult() calls.
+	 * 
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == REQUEST_CODE_PICK_FILES) {
@@ -245,6 +304,12 @@ public class ShareOverviewActivity extends Activity {
 	        super.onActivityResult(requestCode, resultCode, data);
 	}
 	
+	/*
+	 * Creates the options menu, based on an xml layout file.
+	 * 
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -253,11 +318,14 @@ public class ShareOverviewActivity extends Activity {
 		return true;
 	}
 
+	/*
+	 * Specifies the actions to be done, when a menu item is selected.
+	 * 
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_refresh) {
 			updateRunnable.run();

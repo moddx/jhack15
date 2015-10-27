@@ -78,11 +78,10 @@ public class FileBrowserActivity extends Activity {
 	
 	private static final String EMPTY_DIRECTORY = "Directory is empty";
 	
-	private Drawable checkBoxDrawable = null;
-
-//	ArrayAdapter<Item> adapter;
 	TableLayout tlayout;
 	Context context;
+	
+	private static final int mainColor = Color.argb(255, 173, 192, 193);
 	
 	private boolean showUnreadableFiles = false;
 	private boolean showHiddenFiles = false;
@@ -186,6 +185,7 @@ public class FileBrowserActivity extends Activity {
 
 	private void initializeButtons() {
 		Button upDirButton = (Button) this.findViewById(R.id.upDirectoryButton);
+//		upDirButton.setBackgroundColor(mainColor);
 		upDirButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -199,6 +199,7 @@ public class FileBrowserActivity extends Activity {
 
 		Button selectButton = (Button) this
 				.findViewById(R.id.selectButton);
+//		selectButton.setBackgroundColor(mainColor);
 		
 		if (currentAction == SELECT_DIRECTORY) {
 			selectButton.setOnClickListener(new OnClickListener() {
@@ -270,15 +271,22 @@ public class FileBrowserActivity extends Activity {
 	private void updateFileListUI() {
 		tlayout.removeAllViews();
 		
-		float textSize = new TextView(context).getTextSize() * 1.15f;
+		float textSize = new TextView(context).getTextSize() * 1.20f;
 		
 		for(final Item item : fileList) {
+			/*
+			 * Setup Row
+			 */
 			TableRow row = new TableRow(context);
-			row.setBackgroundColor(Color.LTGRAY);
+			row.setBackgroundColor(mainColor);
+			row.setPadding(0, 1, 0, 1);
 			TableLayout.LayoutParams rowLayout = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			rowLayout.setMargins(0, 1, 0, 1);
+			rowLayout.setMargins(0, 2, 0, 1);
 			row.setLayoutParams(rowLayout);
 
+			/*
+			 * Setup TextView containing an icon and the file name
+			 */
 			TextView fileView = new TextView(context);
 			fileView.setText(item.file);
 			fileView.setTextSize(textSize);
@@ -286,6 +294,9 @@ public class FileBrowserActivity extends Activity {
 			row.addView(fileView);
 			
 			if(!item.isDirectory) {
+				/*
+				 * Add checkbox for normal files
+				 */
 				CheckBox chckBx = new CheckBox(context);
 				chckBx.setTextSize(textSize);
 				chckBx.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 0.1f));
@@ -318,14 +329,13 @@ public class FileBrowserActivity extends Activity {
 				fileView.setEllipsize(null);
 				
 				fileView.setOnClickListener(new OnClickListener() {
-					
 					@Override
 					public void onClick(View _v) {
 						TextView view = (TextView) _v;
 
 						Item onClickItem = FileBrowserActivity.this.getItem(view.getText().toString());
 
-						if (onClickItem.canRead && !onClickItem.isEmpty) {	// Adds chosen directory to list
+						if (onClickItem.canRead && !onClickItem.isEmpty) {
 							pathDirsList.add(onClickItem.file);
 							path = new File(path + "/" + onClickItem.file);
 
@@ -338,10 +348,12 @@ public class FileBrowserActivity extends Activity {
 							Log.d(LOGTAG, path.getAbsolutePath());
 						}
 					}
-
 				});
 			}
-			
+
+			/*
+			 * Add row to table
+			 */
 			tlayout.addView(row);
 		}
 		

@@ -38,7 +38,7 @@ public final class R {
         public static final int checkbox=0x7f08000f;
         public static final int currentDirectoryTextView=0x7f08000d;
         public static final int deleteButton=0x7f08000a;
-        public static final int fileListView=0x7f08000e;
+        public static final int filesTable=0x7f08000e;
         public static final int linkText=0x7f080004;
         public static final int name=0x7f080010;
         public static final int scrollView=0x7f080008;

@@ -53,9 +53,9 @@ public class Httpd extends Service
         try {
             server.start();
         } catch(IOException ioe) {
-            Log.w("Httpd", "The server could not start.");
+            Log.e("Httpd", "The web server could not start.");
         }
-        Log.w("Httpd", "Web server initialized.");
+        Log.i("Httpd", "Web server initialized.");
     }
 
     @Override
@@ -152,11 +152,14 @@ public class Httpd extends Service
 		        String[] pathParts = path.split("/");
 	        	String onlyFileName = pathParts[pathParts.length - 1];
 		        
+	        	Log.d("quickshare", "onlyFileName of '" + path + "' is '" + onlyFileName + "'");
+	        	
 		        /*
 		         * Serve file Stream
 		         */
-		        Response chunkedResponse = newChunkedResponse(Response.Status.OK, "application/octet-stream", fis);
-		        chunkedResponse.addHeader("Content-Disposition: attachment; filename=", onlyFileName);
+		        Response chunkedResponse = newChunkedResponse(Response.Status.OK, mimeType, fis);
+//		        chunkedResponse.addHeader("Content-Disposition: attachment; filename=", onlyFileName);		// this should normally work
+		        chunkedResponse.addHeader("Content-Disposition: attachment; filename=\"" + onlyFileName + "\"", null);
 		        return chunkedResponse;
 	        }
 	        

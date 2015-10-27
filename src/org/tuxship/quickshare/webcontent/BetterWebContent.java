@@ -2,6 +2,7 @@ package org.tuxship.quickshare.webcontent;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -74,12 +75,18 @@ public class BetterWebContent implements IWebContent {
 			list.append("<ul id='files'>\n");
 			
 			List<String> files = dbService.getFilesforToken(token);
+			int fileIndex = 0;
 			for (String f : files) {
 				String[] parts = f.split("/");				// obtain file name from path
 				String fname = parts[parts.length - 1];
 				
-				list.append("<li><a href='" + token + "/" + f + "'>" + fname + "</a></li>\n");
+				list.append("<li><a href='?")
+					.append(Httpd.GET_TOKEN).append("=").append(token)
+					.append("&").append(Httpd.GET_FILE).append("=").append(fileIndex++)
+					.append("'>").append(fname).append("</a></li>\n");
 			}
+			
+			Log.d("parameters", new ArrayList<String> (parms.keySet()).toString());
 			
 			list.append("</ul>\n");
 			

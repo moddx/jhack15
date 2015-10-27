@@ -6,6 +6,7 @@ import org.tuxship.filebrowser.FileBrowserActivity;
 import org.tuxship.quickshare.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -45,8 +46,6 @@ public class ShareOverviewActivity extends Activity {
 	TokenDatabase dbService;
     boolean dbBound = false;
 
-    boolean initialised = false;
-    
     private final int REQUEST_CODE_PICK_FILES = 1;
     
     Runnable updateRunnable = new Runnable() {
@@ -101,8 +100,6 @@ public class ShareOverviewActivity extends Activity {
 		 */
         Intent dbIntent = new Intent(this, TokenDatabase.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
-        
-        updateRunnable.run();
 	}
 	
 	/*
@@ -266,7 +263,12 @@ public class ShareOverviewActivity extends Activity {
 		selectFileIntent.putExtra(
 				FileBrowserActivity.showHiddenFilesParameter, false);
 		
-		startActivityForResult(selectFileIntent, REQUEST_CODE_PICK_FILES);
+		try {
+			startActivityForResult(selectFileIntent, REQUEST_CODE_PICK_FILES);
+		} catch ( ActivityNotFoundException e) {
+		    e.printStackTrace();
+		}
+		
 		
 	}
 	
@@ -349,12 +351,9 @@ public class ShareOverviewActivity extends Activity {
             dbBound = true;
             
             /*
-     		 * Setup rows initially
+     		 * Setup/Update rows every time we connect to the database again
      		 */
-            if(!initialised) {
-            	updateRunnable.run();
-            	initialised = true;
-            }
+            updateRunnable.run();
         }
 
         @Override

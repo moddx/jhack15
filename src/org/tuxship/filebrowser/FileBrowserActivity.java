@@ -19,6 +19,10 @@ import java.util.Comparator;
 import java.util.Locale;
 
 import org.tuxship.quickshare.R;
+import org.tuxship.quickshare.R.drawable;
+import org.tuxship.quickshare.R.id;
+import org.tuxship.quickshare.R.layout;
+import org.tuxship.quickshare.R.menu;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

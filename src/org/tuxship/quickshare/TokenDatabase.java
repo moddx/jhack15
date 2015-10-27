@@ -28,6 +28,11 @@ public class TokenDatabase extends Service {
 	// Binder given to clients
     private final IBinder binder = new LocalBinder();
     
+    @Override
+    public void onCreate() {
+    	Log.i("@string/logtag", "Creating database service");
+    	super.onCreate();
+    }
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

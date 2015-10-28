@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.tuxship.quickshare.Httpd;
-import org.tuxship.quickshare.TokenDatabase;
+import org.tuxship.quickshare.dao.TokenDatabase;
 
 import android.content.Context;
 import android.util.Log;
@@ -74,7 +74,7 @@ public class BetterWebContent implements IWebContent {
 			
 			list.append("<ul id='files'>\n");
 			
-			List<String> files = dbService.getFilesforToken(token);
+			List<String> files = dbService.getFiles(token);
 			int fileIndex = 0;
 			for (String f : files) {
 				String[] parts = f.split("/");				// obtain file name from path

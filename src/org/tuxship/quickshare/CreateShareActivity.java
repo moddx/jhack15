@@ -2,7 +2,8 @@ package org.tuxship.quickshare;
 
 import java.util.ArrayList;
 
-import org.tuxship.quickshare.TokenDatabase.LocalBinder;
+import org.tuxship.quickshare.dao.TokenDatabase;
+import org.tuxship.quickshare.dao.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
 import android.content.ComponentName;

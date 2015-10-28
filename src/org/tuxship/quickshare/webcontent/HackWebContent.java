@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.tuxship.quickshare.TokenDatabase;
+import org.tuxship.quickshare.dao.TokenDatabase;
 
 import android.content.Context;
 import android.util.Log;
@@ -85,7 +85,7 @@ public class HackWebContent implements IWebContent {
             page.append("<p>Hello, here are your files (Token: " + parms.get("accessToken") + " )</p>");
             page.append("<table><tr><th>Your Files:</th></tr>\n");
             
-        	List<String> files=dbService.getFilesforToken(parms.get("accessToken"));
+        	List<String> files=dbService.getFiles(parms.get("accessToken"));
         	for(int i =0;i<files.size();i++){
         		File f=new File(files.get(i));
         			            		

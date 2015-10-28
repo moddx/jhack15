@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.tuxship.quickshare.TokenDatabase.LocalBinder;
+import org.tuxship.quickshare.dao.TokenDatabase;
+import org.tuxship.quickshare.dao.TokenDatabase.LocalBinder;
 import org.tuxship.quickshare.webcontent.BetterWebContent;
 import org.tuxship.quickshare.webcontent.IWebContent;
 
@@ -119,7 +120,7 @@ public class Httpd extends Service
 	        	 */
 	        	List<String> files = null;
 	        	if(dbBound) {
-	        		files = dbService.getFilesforToken(token);
+	        		files = dbService.getFiles(token);
 	        	} else
 	        		Log.e("@string/logtag", "No database connection in Httpd");
 	        	

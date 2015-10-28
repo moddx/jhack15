@@ -2,7 +2,7 @@ package org.tuxship.quickshare.webcontent;
 
 import java.util.Map;
 
-import org.tuxship.quickshare.TokenDatabase;
+import org.tuxship.quickshare.dao.TokenDatabase;
 
 /**
  * An Interface that generates web content.

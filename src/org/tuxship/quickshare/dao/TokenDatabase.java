@@ -1,4 +1,4 @@
-package org.tuxship.quickshare;
+package org.tuxship.quickshare.dao;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -66,7 +66,7 @@ public class TokenDatabase extends Service {
 		return ret;
 		
 	}
-	public boolean deleteShare(String name) {
+	public boolean removeShare(String name) {
 		if(Build.VERSION.SDK_INT >= 19)
 			return removefromJSON_api19(name);
 		else 
@@ -94,7 +94,7 @@ public class TokenDatabase extends Service {
 		return list;
 	}
 
-	public List<String> getFilesforToken(String token){
+	public List<String> getFiles(String token){
 
 		List<String> files = new ArrayList<String>();
 		try {
@@ -306,7 +306,7 @@ public class TokenDatabase extends Service {
 
 
 	public class LocalBinder extends Binder {
-		TokenDatabase getService() {
+		public TokenDatabase getService() {
 			return TokenDatabase.this;
 		}
 	}

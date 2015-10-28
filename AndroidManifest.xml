@@ -23,7 +23,7 @@
             android:enabled="true" >
         </service>
         <service
-            android:name=".TokenDatabase"
+            android:name="org.tuxship.quickshare.dao.TokenDatabase"
             android:enabled="true" >
         </service>
         

@@ -3,7 +3,8 @@ package org.tuxship.quickshare;
 import java.util.ArrayList;
 
 import org.tuxship.filebrowser.FileBrowserActivity;
-import org.tuxship.quickshare.TokenDatabase.LocalBinder;
+import org.tuxship.quickshare.dao.TokenDatabase;
+import org.tuxship.quickshare.dao.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -232,7 +233,7 @@ public class ShareOverviewActivity extends Activity {
 				
 				String shareName = ((TextView) row.getChildAt(0)).getText().toString();
 				
-				if(dbService.deleteShare(shareName))
+				if(dbService.removeShare(shareName))
 					tlayout.removeViewAt(i);
 				else {
 					Toast toast = Toast.makeText(context, "Could not remove " + shareName + " from database.", Toast.LENGTH_LONG);

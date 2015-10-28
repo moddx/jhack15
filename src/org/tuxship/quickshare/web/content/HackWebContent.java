@@ -1,4 +1,4 @@
-package org.tuxship.quickshare.webcontent;
+package org.tuxship.quickshare.web.content;
 
 import java.io.BufferedInputStream;
 import java.io.File;

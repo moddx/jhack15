@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme" >
         
         <service
-            android:name=".Httpd"
+            android:name="org.tuxship.quickshare.web.Httpd"
             android:enabled="true" >
         </service>
         <service

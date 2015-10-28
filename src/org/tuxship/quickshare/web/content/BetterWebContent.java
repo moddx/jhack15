@@ -1,4 +1,4 @@
-package org.tuxship.quickshare.webcontent;
+package org.tuxship.quickshare.web.content;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.tuxship.quickshare.Httpd;
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
+import org.tuxship.quickshare.web.Httpd;
 
 import android.content.Context;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package org.tuxship.quickshare;
+package org.tuxship.quickshare.web;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,9 +9,9 @@ import java.util.Map;
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
+import org.tuxship.quickshare.web.content.BetterWebContent;
+import org.tuxship.quickshare.web.content.IWebContent;
 import org.tuxship.quickshare.dao.TokenDatabase;
-import org.tuxship.quickshare.webcontent.BetterWebContent;
-import org.tuxship.quickshare.webcontent.IWebContent;
 
 import android.app.Service;
 import android.content.ComponentName;

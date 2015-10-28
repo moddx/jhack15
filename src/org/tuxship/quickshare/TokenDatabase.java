@@ -12,11 +12,12 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -66,7 +67,10 @@ public class TokenDatabase extends Service {
 		
 	}
 	public boolean deleteShare(String name) {
-		return removefromJSON(name);
+		if(Build.VERSION.SDK_INT >= 19)
+			return removefromJSON_api19(name);
+		else 
+			return removefromJSON_legacy(name);
 	}
 
 	public List<String> getShares(){
@@ -168,7 +172,14 @@ public class TokenDatabase extends Service {
 		} 
 	}
 
-	private boolean removefromJSON(String sname){
+	/**
+	 * Removes a share from the database.
+	 * 
+	 * This method uses JSONArray.remove() and hence is only 
+	 * available on devices running Kitkat (Api level 19) or higher.
+	 */
+	@TargetApi(Build.VERSION_CODES.KITKAT)
+	private boolean removefromJSON_api19(String sname){
 		JSONObject in = loadJSON();
 		try{
 			JSONArray db = in.getJSONArray("db");
@@ -177,7 +188,7 @@ public class TokenDatabase extends Service {
 				JSONObject obj = db.getJSONObject(i);
 				
 				if(obj.get("name").equals(sname)){
-					db.remove(i);
+					db.remove(i);				// introduced in Api level 19 (Kitkat)
 					in.put("db", db);
 					saveJSON(in);
 					return true;
@@ -188,6 +199,50 @@ public class TokenDatabase extends Service {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Removes a share from the database.
+	 * 
+	 * This method does not use JSONArray.remove() and thus
+	 * supports devices running older versions of android 
+	 * as well.
+	 */
+	private boolean removefromJSON_legacy(String sname){
+		JSONObject in = loadJSON();
+		
+		boolean success = false;
+		try{
+			JSONArray db = in.getJSONArray("db");
+			JSONArray newdb = new JSONArray();
+			
+			/*
+			 * Instead of removing the object with the specified
+			 * sharename, we have to create a new JSONArray with
+			 * all values, but the one we want excluded.
+			 * 
+			 * This is necessary since JSONArray.remove() was 
+			 * first introduced in API Level 19 (Kitkat)  and
+			 * therefore is unavailable on older devices.
+			 */
+			for(int i = 0; i < db.length(); i++){
+				JSONObject obj = db.getJSONObject(i);
+				
+				if(obj.get("name").equals(sname)) {
+					success = true;
+					continue;
+				}
+				
+				newdb.put(obj);
+			}
+			
+			in.put("db", newdb);
+			saveJSON(in);
+		}catch(JSONException e){
+			e.printStackTrace();
+		}
+		
+		return success;
 	}
 
 	private void initFile() {

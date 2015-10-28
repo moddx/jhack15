@@ -100,6 +100,9 @@ public class ShareOverviewActivity extends Activity {
 		 */
         Intent dbIntent = new Intent(this, TokenDatabase.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        updateRunnable.run();	// ensure that list is really updated
+        // (may actually fail, but then the other call in onServiceConnected() will succeed)
 	}
 	
 	/*
@@ -240,6 +243,12 @@ public class ShareOverviewActivity extends Activity {
 				i++;
 			}
 		}
+		
+		/*
+		 * Display placeholder if all shares have been deleted.
+		 */
+		if(tlayout.getChildCount() == 0)
+			noSharesPlaceholder();
 		
 		deleteButton.setEnabled(tlayout.getChildCount() > 0);
 	}

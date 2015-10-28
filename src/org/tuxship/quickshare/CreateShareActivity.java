@@ -2,8 +2,9 @@ package org.tuxship.quickshare;
 
 import java.util.ArrayList;
 
+import org.tuxship.quickshare.dao.DAOService;
+import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.TokenDatabase;
-import org.tuxship.quickshare.dao.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -28,7 +29,7 @@ public class CreateShareActivity extends Activity {
 	Button submitBtn;
 	EditText shareNameInput; 
 	
-	TokenDatabase dbService;
+	DAOService dbService;
 	boolean dbBound = false;
 	
 	ArrayList<String> files;

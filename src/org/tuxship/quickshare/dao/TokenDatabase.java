@@ -21,27 +21,12 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-public class TokenDatabase extends Service {
+public class TokenDatabase extends DAOService {
 	public String FILENAME = "token_database";
 
 	public static final int tokenLength = 6;
 
-	// Binder given to clients
-    private final IBinder binder = new LocalBinder();
-    
-    @Override
-    public void onCreate() {
-    	Log.i("@string/logtag", "Creating database service");
-    	super.onCreate();
-    }
-    
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        // We want this service to continue running until it is explicitly
-        // stopped, so return sticky.
-        return START_STICKY;
-    }
-
+	@Override
 	public String addShare(String name, List<String> files) {
 		JSONArray jarray = new JSONArray(files);
 		JSONObject jobj=loadJSON();
@@ -51,28 +36,16 @@ public class TokenDatabase extends Service {
 
 		return token;
 	}
-	public String printdatabase(){
-		JSONObject db = loadJSON();
-		
-		if(db == null) 
-			return "Database is empty";
-		
-		String ret="";
-		try {
-			ret = db.toString(8);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return ret;
-		
-	}
+
+	@Override
 	public boolean removeShare(String name) {
 		if(Build.VERSION.SDK_INT >= 19)
 			return removefromJSON_api19(name);
-		else 
-			return removefromJSON_legacy(name);
+
+		return removefromJSON_legacy(name);
 	}
 
+	@Override
 	public List<String> getShares(){
 		ArrayList<String> list = new ArrayList<String>();
 
@@ -94,9 +67,10 @@ public class TokenDatabase extends Service {
 		return list;
 	}
 
-	public List<String> getFiles(String token){
-
+	@Override
+	public List<String> getFiles(String token) throws TokenNotFoundException {
 		List<String> files = new ArrayList<String>();
+		
 		try {
 			JSONArray db = loadJSON().getJSONArray("db");
 			
@@ -112,18 +86,35 @@ public class TokenDatabase extends Service {
 				}
 			}
 			
-			if(files.size() == 0){
-				files.add("No files for your token");
-			}
-			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		
+		if(files.size() == 0)
+			throw new TokenNotFoundException("Token '" + token + "' does not exist.");
+		
 		return files;
 	}
+	
+	@Override
+	public String getToken(String share) throws ShareNotFoundException {
+		try {
+			JSONArray db = loadJSON().getJSONArray("db");
+			
+			for(int i = 0; i < db.length();  i++) {
+				JSONObject curShare = db.getJSONObject(i);
+				
+				if(curShare.getString("name").equals(share))
+					return curShare.getString("key");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		throw new ShareNotFoundException("No share with the name '" + share + "'!");
+	}
 
-	private String createKey(JSONArray files) {
+	private static String createKey(JSONArray files) {
 		String str=files.toString();
 
 		StringBuffer result = new StringBuffer();
@@ -150,7 +141,7 @@ public class TokenDatabase extends Service {
 		return result.substring(result.length() - tokenLength);
 	}
 
-	private void addtoJSON(JSONObject obj,String name,String key,JSONArray files){
+	private static void addtoJSON(JSONObject obj, String name, String key, JSONArray files){
 		try{
 			JSONArray db;
 			if(!obj.has("db")){//check if top level array exists
@@ -299,33 +290,4 @@ public class TokenDatabase extends Service {
 		return out;
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return binder;
-	}
-
-
-	public class LocalBinder extends Binder {
-		public TokenDatabase getService() {
-			return TokenDatabase.this;
-		}
-	}
-
-
-	public String getToken(String share) throws Exception {
-		try {
-			JSONArray db = loadJSON().getJSONArray("db");
-			
-			for(int i = 0; i < db.length();  i++) {
-				JSONObject curShare = db.getJSONObject(i);
-				
-				if(curShare.getString("name").equals(share))
-					return curShare.getString("key");
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		throw new Exception("No share with the name '" + share + "'!");
-	}
 }

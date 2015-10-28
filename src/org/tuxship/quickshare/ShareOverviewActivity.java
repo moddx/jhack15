@@ -3,8 +3,9 @@ package org.tuxship.quickshare;
 import java.util.ArrayList;
 
 import org.tuxship.filebrowser.FileBrowserActivity;
+import org.tuxship.quickshare.dao.DAOService;
+import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.TokenDatabase;
-import org.tuxship.quickshare.dao.TokenDatabase.LocalBinder;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -44,7 +45,7 @@ public class ShareOverviewActivity extends Activity {
 	TableLayout tlayout;
 	Button deleteButton;
 	
-	TokenDatabase dbService;
+	DAOService dbService;
     boolean dbBound = false;
 
     private final int REQUEST_CODE_PICK_FILES = 1;

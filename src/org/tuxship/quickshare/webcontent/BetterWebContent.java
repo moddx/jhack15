@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.tuxship.quickshare.Httpd;
-import org.tuxship.quickshare.dao.TokenDatabase;
+import org.tuxship.quickshare.dao.DAOService;
+import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 
 import android.content.Context;
 import android.util.Log;
@@ -44,7 +45,7 @@ public class BetterWebContent implements IWebContent {
 	}
 
 	@Override
-	public String generatePage(TokenDatabase dbService, Map<String, String> parms) {
+	public String generatePage(DAOService dbService, Map<String, String> parms) {
 		final String token = parms.get(Httpd.GET_TOKEN);
 
 		/*
@@ -72,23 +73,29 @@ public class BetterWebContent implements IWebContent {
 			list.append("<p>Here are your files:</p>");
 			
 			
-			list.append("<ul id='files'>\n");
-			
-			List<String> files = dbService.getFiles(token);
-			int fileIndex = 0;
-			for (String f : files) {
-				String[] parts = f.split("/");				// obtain file name from path
-				String fname = parts[parts.length - 1];
+			try {
+				list.append("<ul id='files'>\n");
+				List<String> files;
+				files = dbService.getFiles(token);		// this could throw the exception
 				
-				list.append("<li><a href='?")
-					.append(Httpd.GET_TOKEN).append("=").append(token)
-					.append("&").append(Httpd.GET_FILE).append("=").append(fileIndex++)
-					.append("'>").append(fname).append("</a></li>\n");
+				int fileIndex = 0;
+				for (String f : files) {
+					String[] parts = f.split("/");				// obtain file name from path
+					String fname = parts[parts.length - 1];
+					
+					list.append("<li><a href='?")
+						.append(Httpd.GET_TOKEN).append("=").append(token)
+						.append("&").append(Httpd.GET_FILE).append("=").append(fileIndex++)
+						.append("'>").append(fname).append("</a></li>\n");
+				}
+				
+				list.append("</ul>\n");
+			} catch (TokenNotFoundException e) {
+				Log.w("@string/logtagdb", "Request for token '" + token + "' failed. Token does not exist.");
+				list.append("<p style='text-color: red;'>Invalid Token!</p>");
 			}
 			
 			Log.d("parameters", new ArrayList<String> (parms.keySet()).toString());
-			
-			list.append("</ul>\n");
 			
 			template = template.replace("_REPLACE_WITH_FILES_OR_PROMPT_", list.toString());
 		}

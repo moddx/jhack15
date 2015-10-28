@@ -101,7 +101,7 @@ public abstract class DAOService extends Service {
 	 * @param token	the access token
 	 * @return	the files that are stored with this token 
 	 */
-	public abstract List<String> getFiles(String token);
+	public abstract List<String> getFiles(String token) throws TokenNotFoundException;
 
 	
 	/**
@@ -113,6 +113,38 @@ public abstract class DAOService extends Service {
 	 * @param share	the name of the share
 	 * @return	the access token of the share
 	 */
-	public abstract String getToken(String share);
+	public abstract String getToken(String share) throws ShareNotFoundException;
+	
+	/**
+	 * Thrown when a share name, passed as a parameter, does not exist.
+	 */
+	public class ShareNotFoundException extends Exception {
+		/**
+		 * Generated serialVersionUID
+		 */
+		private static final long serialVersionUID = -6940677985750749370L;
+		
+		public ShareNotFoundException() {}
+		
+		public ShareNotFoundException(String message) {
+			super(message);
+		}
+	}
+	
+	/**
+	 * Thrown when a token, passed as a parameter, does not exist.
+	 */
+	public class TokenNotFoundException extends Exception {
+		/**
+		 * Generated serialVersionUID
+		 */
+		private static final long serialVersionUID = -6940677985750749370L;
+		
+		public TokenNotFoundException() {}
+		
+		public TokenNotFoundException(String message) {
+			super(message);
+		}
+	}
 	
 }

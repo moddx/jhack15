@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.tuxship.quickshare.dao.DAOService;
+import org.tuxship.quickshare.dao.DAOService.LocalBinder;
+import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 import org.tuxship.quickshare.dao.TokenDatabase;
-import org.tuxship.quickshare.dao.TokenDatabase.LocalBinder;
 import org.tuxship.quickshare.webcontent.BetterWebContent;
 import org.tuxship.quickshare.webcontent.IWebContent;
 
@@ -26,7 +28,7 @@ public class Httpd extends Service
 {
     private WebServer server;
     
-    TokenDatabase dbService;
+    DAOService dbService;
     boolean dbBound = false;
     
     public static final String GET_FILE = "getfile";
@@ -120,7 +122,11 @@ public class Httpd extends Service
 	        	 */
 	        	List<String> files = null;
 	        	if(dbBound) {
-	        		files = dbService.getFiles(token);
+	        		try {
+						files = dbService.getFiles(token);
+					} catch (TokenNotFoundException e) {
+						e.printStackTrace();
+					}
 	        	} else
 	        		Log.e("@string/logtag", "No database connection in Httpd");
 	        	
@@ -176,12 +182,11 @@ public class Httpd extends Service
 //	    	IWebContent content = new HackWebContent(getApplication().getApplicationContext());
 	        IWebContent content = new BetterWebContent(getApplication().getApplicationContext());
 	    	
-	        if(dbBound) {
+	        if(dbBound)
 	        	return newFixedLengthResponse(content.generatePage(dbService, parms));
-	        } else {
-	        	Log.e("@string/logtag", "no dbBound in Httpd.serve()");
-	        	return newFixedLengthResponse("Database error");
-	        }
+        	
+        	Log.e("@string/logtag", "no dbBound in Httpd.serve()");
+        	return newFixedLengthResponse("Database error");
 		}
 	}
 	

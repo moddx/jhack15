@@ -3,11 +3,13 @@ package org.tuxship.quickshare.webcontent;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.tuxship.quickshare.dao.TokenDatabase;
+import org.tuxship.quickshare.dao.DAOService;
+import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 
 import android.content.Context;
 import android.util.Log;
@@ -61,7 +63,7 @@ public class HackWebContent implements IWebContent {
 	}
 	
 	@Override
-	public String generatePage(TokenDatabase dbService, Map<String, String> parms) {
+	public String generatePage(DAOService dbService, Map<String, String> parms) {
 		StringBuilder page = new StringBuilder();
 
 		page.append("<!DOCTYPE html><html><head>");
@@ -85,12 +87,19 @@ public class HackWebContent implements IWebContent {
             page.append("<p>Hello, here are your files (Token: " + parms.get("accessToken") + " )</p>");
             page.append("<table><tr><th>Your Files:</th></tr>\n");
             
-        	List<String> files=dbService.getFiles(parms.get("accessToken"));
+        	List<String> files;
+			try {
+				files = dbService.getFiles(parms.get("accessToken"));
+			} catch (TokenNotFoundException e) {
+				files = new ArrayList<String>();
+				files.add("Token does not exist!");
+			}
+			
         	for(int i =0;i<files.size();i++){
-        		File f=new File(files.get(i));
+        		File f = new File(files.get(i));
         			            		
-        		page.append("<tr><td>"+files.get(i)+"</td></tr>\n");
-        		page.append("<tr><td>"+f.getAbsolutePath()+"</td></tr>\n");
+        		page.append("<tr><td>"+ f +"</td></tr>\n");
+        		page.append("<tr><td>"+ f.getAbsolutePath() +"</td></tr>\n");
         	}
         	
             page.append("</table>\n");

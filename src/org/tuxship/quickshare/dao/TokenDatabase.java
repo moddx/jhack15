@@ -1,5 +1,7 @@
 package org.tuxship.quickshare.dao;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,27 +14,40 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.annotation.TargetApi;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Binder;
 import android.os.Build;
-import android.os.IBinder;
 import android.util.Log;
 
 public class TokenDatabase extends DAOService {
-	public String FILENAME = "token_database";
+	public static final String FILENAME = "token_database";
 
 	public static final int tokenLength = 6;
+	
+	private static final String SHARE_DB = "db";
+	private static final String SHARE_TOKEN = "key";
+	private static final String SHARE_NAME = "name";
+	private static final String SHARE_FILES = "files";
+	
+	private JSONObject jsonDB = null;
 
 	@Override
 	public String addShare(String name, List<String> files) {
-		JSONArray jarray = new JSONArray(files);
-		JSONObject jobj=loadJSON();
-		String token=createKey(jarray);
-		addtoJSON(jobj, name, token, jarray);
-		saveJSON(jobj);
+		/*
+		 * jsonify and create token
+		 */
+		JSONArray jsonFileList = new JSONArray(files);
+		String token = createKey(jsonFileList);
+		
+		/*
+		 * persist data
+		 */
+		if(jsonDB == null)
+			jsonDB = loadJSON();
+
+		addtoJSON(name, token, jsonFileList);
+		saveJSON(jsonDB);
 
 		return token;
 	}
@@ -47,42 +62,46 @@ public class TokenDatabase extends DAOService {
 
 	@Override
 	public List<String> getShares(){
-		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<String> shares = new ArrayList<String>();
 
-		JSONObject obj = loadJSON();
+		if(jsonDB == null)
+			jsonDB = loadJSON();
 		
 		try {
-			JSONArray db = obj.getJSONArray("db");
+			JSONArray db = jsonDB.getJSONArray(SHARE_DB);
 
 			for(int i = 0; i < db.length(); i++){
-				list.add(db.getJSONObject(i).get("name").toString());
+				shares.add(db.getJSONObject(i).get(SHARE_NAME).toString());
 			}
 		} catch (JSONException e) {
-			/*
-			 *  no values in db!
-			 *  return empty list
-			 */
+			// Empty database.
+			// Return empty list.
 		}		
 
-		return list;
+		return shares;
 	}
 
 	@Override
 	public List<String> getFiles(String token) throws TokenNotFoundException {
 		List<String> files = new ArrayList<String>();
 		
+		if(jsonDB == null)
+			jsonDB = loadJSON();
+		
 		try {
-			JSONArray db = loadJSON().getJSONArray("db");
+			JSONArray db = jsonDB.getJSONArray(SHARE_DB);
 			
-			Log.i("dataout", "files in db for token: " + db.length());
 			for(int i = 0; i < db.length(); i++){
-				JSONObject curobj = (JSONObject) db.get(i);
+				JSONObject share = (JSONObject) db.get(i);
 				
-				if(curobj.get("key").equals(token)){
-					JSONArray curfiles = curobj.getJSONArray("files");
-					for(int j = 0; j < curfiles.length(); j++){
-						files.add(curfiles.getString(j));
+				if(share.get(SHARE_TOKEN).equals(token)){
+					JSONArray jsonFiles = share.getJSONArray(SHARE_FILES);
+					
+					for(int j = 0; j < jsonFiles.length(); j++){
+						files.add(jsonFiles.getString(j));
 					}
+					
+					return files;
 				}
 			}
 			
@@ -90,36 +109,35 @@ public class TokenDatabase extends DAOService {
 			e.printStackTrace();
 		}
 		
-		if(files.size() == 0)
-			throw new TokenNotFoundException("Token '" + token + "' does not exist.");
-		
-		return files;
+		throw new TokenNotFoundException("Token '" + token + "' does not exist.");
 	}
 	
 	@Override
-	public String getToken(String share) throws ShareNotFoundException {
+	public String getToken(String shareName) throws ShareNotFoundException {
+		if(jsonDB == null)
+			jsonDB = loadJSON();
+		
 		try {
-			JSONArray db = loadJSON().getJSONArray("db");
+			JSONArray db = jsonDB.getJSONArray(SHARE_DB);
 			
 			for(int i = 0; i < db.length();  i++) {
-				JSONObject curShare = db.getJSONObject(i);
+				JSONObject share = db.getJSONObject(i);
 				
-				if(curShare.getString("name").equals(share))
-					return curShare.getString("key");
+				if(share.getString(SHARE_NAME).equals(shareName))
+					return share.getString(SHARE_TOKEN);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		
-		throw new ShareNotFoundException("No share with the name '" + share + "'!");
+		throw new ShareNotFoundException("No share with the name '" + shareName + "'!");
 	}
 
 	private static String createKey(JSONArray files) {
-		String str=files.toString();
-
 		StringBuffer result = new StringBuffer();
+		
 		try {
-			byte[] bytesOfMessage = str.getBytes("UTF-8");
+			byte[] bytesOfMessage = files.toString().getBytes("UTF-8");
 
 			MessageDigest md;
 			md = MessageDigest.getInstance("SHA1");
@@ -128,8 +146,7 @@ public class TokenDatabase extends DAOService {
 
 			for(byte b : thedigest) {
 				if((0xff & b) < 0x10) {
-					result.append("0"
-							+ Integer.toHexString(0xff & b));
+					result.append("0" + Integer.toHexString(0xff & b));
 				} else {
 					result.append(Integer.toHexString(0xff & b));
 				}
@@ -141,24 +158,23 @@ public class TokenDatabase extends DAOService {
 		return result.substring(result.length() - tokenLength);
 	}
 
-	private static void addtoJSON(JSONObject obj, String name, String key, JSONArray files){
-		try{
-			JSONArray db;
-			if(!obj.has("db")){//check if top level array exists
-				db=new JSONArray();
-				obj.put("db", db);
-			} else {
-				db=obj.getJSONArray("db");
-			}
+	private void addtoJSON(String name, String key, JSONArray files){
+		if(jsonDB == null)
+			jsonDB = loadJSON();
+		
+		try {
+			JSONArray db = (jsonDB.has(SHARE_DB)) ? 
+					jsonDB.getJSONArray(SHARE_DB) : new JSONArray();
 
-			JSONObject input=new JSONObject();
-			input.put("key",key);
-			input.put("name", name);
-			input.put("files",files);
-			db.put(input);
-			obj.put("db", db);			
-
-		}catch(JSONException e){
+			JSONObject share = new JSONObject();
+			share.put(SHARE_TOKEN, key);
+			share.put(SHARE_NAME, name);
+			share.put(SHARE_FILES, files);
+			
+			db.put(share);
+			
+			jsonDB.put(SHARE_DB, db);
+		} catch(JSONException e) {
 			e.printStackTrace();
 		} 
 	}
@@ -170,18 +186,20 @@ public class TokenDatabase extends DAOService {
 	 * available on devices running Kitkat (Api level 19) or higher.
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
-	private boolean removefromJSON_api19(String sname){
-		JSONObject in = loadJSON();
+	private boolean removefromJSON_api19(String shareName){
+		if(jsonDB == null)
+			jsonDB = loadJSON();
+		
 		try{
-			JSONArray db = in.getJSONArray("db");
+			JSONArray db = jsonDB.getJSONArray(SHARE_DB);
 			
 			for(int i = 0; i < db.length(); i++){
-				JSONObject obj = db.getJSONObject(i);
+				JSONObject share = db.getJSONObject(i);
 				
-				if(obj.get("name").equals(sname)){
+				if(share.get(SHARE_NAME).equals(shareName)){
 					db.remove(i);				// introduced in Api level 19 (Kitkat)
-					in.put("db", db);
-					saveJSON(in);
+					jsonDB.put(SHARE_DB, db);
+					saveJSON(jsonDB);
 					return true;
 				}
 			}
@@ -199,12 +217,13 @@ public class TokenDatabase extends DAOService {
 	 * supports devices running older versions of android 
 	 * as well.
 	 */
-	private boolean removefromJSON_legacy(String sname){
-		JSONObject in = loadJSON();
+	private boolean removefromJSON_legacy(String shareName){
+		if(jsonDB == null)
+			jsonDB = loadJSON();
 		
 		boolean success = false;
 		try{
-			JSONArray db = in.getJSONArray("db");
+			JSONArray db = jsonDB.getJSONArray(SHARE_DB);
 			JSONArray newdb = new JSONArray();
 			
 			/*
@@ -217,18 +236,18 @@ public class TokenDatabase extends DAOService {
 			 * therefore is unavailable on older devices.
 			 */
 			for(int i = 0; i < db.length(); i++){
-				JSONObject obj = db.getJSONObject(i);
+				JSONObject share = db.getJSONObject(i);
 				
-				if(obj.get("name").equals(sname)) {
+				if(share.get(SHARE_NAME).equals(shareName)) {
 					success = true;
 					continue;
 				}
 				
-				newdb.put(obj);
+				newdb.put(share);
 			}
 			
-			in.put("db", newdb);
-			saveJSON(in);
+			jsonDB.put(SHARE_DB, newdb);
+			saveJSON(jsonDB);
 		}catch(JSONException e){
 			e.printStackTrace();
 		}
@@ -239,55 +258,60 @@ public class TokenDatabase extends DAOService {
 	private void initFile() {
 		try {
 			FileOutputStream fos = getApplication().getApplicationContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			fos.write("{\"db\": []}".getBytes());
+			fos.write(("{\"" + SHARE_DB + "\": []}").getBytes());
 			fos.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void saveJSON(JSONObject obj){
+	private boolean saveJSON(JSONObject obj){
+		try {
+			FileOutputStream fOut = getApplication().getApplicationContext()
+					.openFileOutput(FILENAME, Context.MODE_PRIVATE);
 
-		try{
-			FileOutputStream fos = getApplication().getApplicationContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			try{
-
-				fos.write(obj.toString().getBytes());
-				fos.close();
-
-			} catch(IOException ioex){
-				ioex.printStackTrace();
-			}
-		} catch(FileNotFoundException fnf){
-
-			fnf.printStackTrace();
+			fOut.write(obj.toString().getBytes());
+			fOut.close();
+		} catch(FileNotFoundException e){
+			Log.e("@string/logtagdb", "Can not store jsonDB. FileNotFoundException");
+			return false;
+		} catch(IOException e){
+			Log.e("@string/logtagdb", "Can not store jsonDB. IOException");
+			return false;
 		}
-
+		
+		return true;
 	}
 
 	private JSONObject loadJSON(){
 		String result = "";
-		JSONObject out=new JSONObject();
-		try{
-			FileInputStream fis = getApplication().getApplicationContext().openFileInput(FILENAME);
-			Scanner scan = new Scanner(fis);
+
+		try {
+			FileInputStream fIn = getApplication().getApplicationContext()
+					.openFileInput(FILENAME);
+			BufferedInputStream bIn = new BufferedInputStream(fIn);
+			Scanner scan = new Scanner(bIn);
+			
 			while(scan.hasNext()) {
 				result += scan.next();
 			}
+			
 			scan.close();
 		} catch(FileNotFoundException e){
 			initFile();
 			return loadJSON();
 		}
 
+		JSONObject jsonIn = new JSONObject();
+		
 		try {
-			out=new JSONObject(result);
+			jsonIn = new JSONObject(result);
 		} catch (JSONException e) {
-			e.printStackTrace();
 			Log.w("dataout", "could not create jsonobject from loaded data");
+			e.printStackTrace();
 		}
 
-		return out;
+		return jsonIn;
 	}
 
 }

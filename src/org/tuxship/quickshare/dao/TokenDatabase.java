@@ -49,6 +49,8 @@ public class TokenDatabase extends DAOService {
 		addtoJSON(name, token, jsonFileList);
 		saveJSON(jsonDB);
 
+//		dumpJSON();
+		
 		return token;
 	}
 
@@ -133,6 +135,13 @@ public class TokenDatabase extends DAOService {
 		throw new ShareNotFoundException("No share with the name '" + shareName + "'!");
 	}
 
+	public void dumpJSON() {
+		if(jsonDB == null)
+			jsonDB = loadJSON();
+
+		Log.d("DatabaseDump", jsonDB.toString());
+	}
+	
 	private static String createKey(JSONArray files) {
 		StringBuffer result = new StringBuffer();
 		

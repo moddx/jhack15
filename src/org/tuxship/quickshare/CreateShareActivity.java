@@ -165,7 +165,7 @@ public class CreateShareActivity extends Activity {
 	 * 
 	 * Uses the Uri.getPath() method.
 	 */
-	private ArrayList<String> convertUris(ArrayList<Uri> uris) {
+	private static ArrayList<String> convertUris(ArrayList<Uri> uris) {
 		ArrayList<String> paths = new ArrayList<String>();
 		
 		for(Uri uri : uris) {

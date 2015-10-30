@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
-import org.tuxship.quickshare.dao.TokenDatabase;
+import org.tuxship.quickshare.dao.JsonDAO;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -40,7 +40,7 @@ public class CreateShareActivity extends Activity {
 		setContentView(R.layout.activity_create_share);
 		
         // Bind to Database
-        Intent dbIntent = new Intent(this, TokenDatabase.class);
+        Intent dbIntent = new Intent(this, JsonDAO.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
 		
 		Intent intent = getIntent();

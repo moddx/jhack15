@@ -11,7 +11,7 @@ import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 import org.tuxship.quickshare.web.content.BetterWebContent;
 import org.tuxship.quickshare.web.content.IWebContent;
-import org.tuxship.quickshare.dao.TokenDatabase;
+import org.tuxship.quickshare.dao.JsonDAO;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -45,10 +45,10 @@ public class Httpd extends Service
     	/*
 		 * Start database server
 		 */
-		startService(new Intent(this, TokenDatabase.class));
+		startService(new Intent(this, JsonDAO.class));
     	
     	// Bind to dbService
-        Intent dbIntent = new Intent(this, TokenDatabase.class);
+        Intent dbIntent = new Intent(this, JsonDAO.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
     	
         server = new WebServer();
@@ -114,7 +114,7 @@ public class Httpd extends Service
 	        	 * Check token
 	        	 */
 	        	String token = parms.get(GET_TOKEN);
-	        	if(!token.matches("[[a-f][0-9]]{" + TokenDatabase.tokenLength + "}"))
+	        	if(!token.matches("[[a-f][0-9]]{" + JsonDAO.tokenLength + "}"))
 	        		return serveNormal(session, "Illegal token parameter");
 	        	
 	        	/*

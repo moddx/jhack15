@@ -20,7 +20,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-public class TokenDatabase extends DAOService {
+public class JsonDAO extends DAOService {
 	public static final String FILENAME = "token_database";
 
 	public static final int tokenLength = 6;

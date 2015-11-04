@@ -27,6 +27,7 @@ import android.widget.EditText;
 public class CreateShareActivity extends Activity {
 
 	public static final String EXTRA_FILE_LIST = "org.tuxship.quickshare.CreateShareActivity.EXTRA_FILE_LIST";
+	private static final String LOGTAG = "Creating Share";
 	
 	Button submitBtn;
 	EditText shareNameInput; 
@@ -62,8 +63,8 @@ public class CreateShareActivity extends Activity {
 		String action = intent.getAction();
 		String type = intent.getType();
 		
-		Log.i("shareintent", action);
-		Log.i("shareintent", type);
+		Log.d(LOGTAG, action);
+		Log.d(LOGTAG, type);
 
 		ArrayList<Uri> uris = new ArrayList<Uri>();
 		if(action.equals("android.intent.action.SEND")) {
@@ -72,15 +73,15 @@ public class CreateShareActivity extends Activity {
 			uris.add(receivedUri);
 			
 			if(receivedUri == null)
-				Log.i("shareintent", "receivedUri is null");
+				Log.d(LOGTAG, "receivedUri is null");
 			else
-				Log.i("shareintent", receivedUri.getPath());
+				Log.d(LOGTAG, receivedUri.getPath());
 			
 		} else if (action.equals("android.intent.action.SEND_MULTIPLE")) {
 			uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 		
 			for(Uri uri : uris)
-				Log.i("shareintent", uri.getPath());
+				Log.d(LOGTAG, uri.getPath());
 		}
 		
 		files = convertUris(uris);
@@ -92,7 +93,7 @@ public class CreateShareActivity extends Activity {
 //	        // Handle intents with text ...
 //	    }
 		
-		Log.i("shareintent", "ShareIntent finished.");
+		Log.d(LOGTAG, "ShareIntent finished.");
 		
 		
 		setup();
@@ -146,7 +147,7 @@ public class CreateShareActivity extends Activity {
 				if(dbBound && files != null) {
 					token = dbService.addShare(shareName, files);
 				} else {
-					Log.w("shareintent", "Could not store new share! dbBound: " + dbBound + " paths count: " + files.size());
+					Log.w(LOGTAG, "Could not store new share! dbBound: " + dbBound + " paths count: " + files.size());
 				}
 				
 				
@@ -188,7 +189,7 @@ public class CreateShareActivity extends Activity {
 				else if(parts[2].equals("video"))
 					projection = MediaStore.Video.Media.DATA;
 				else {
-					Log.e("Creating Share", "Could not determine projection for '" + uri.toString() +
+					Log.e(LOGTAG, "Could not determine projection for '" + uri.toString() +
 							"' upon trying to convert it to an absolute path.\n Skipping.");
 					continue;
 				}
@@ -198,7 +199,7 @@ public class CreateShareActivity extends Activity {
 				paths.add(uri.getPath());
 		}
 		
-		Log.d("Creating Share", "List of files to add: " + paths);
+		Log.d(LOGTAG, "List of files to add: " + paths);
 		
 		return paths;
 	}

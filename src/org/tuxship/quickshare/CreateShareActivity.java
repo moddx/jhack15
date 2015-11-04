@@ -1,6 +1,7 @@
 package org.tuxship.quickshare;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
@@ -84,7 +85,8 @@ public class CreateShareActivity extends Activity {
 				Log.d(LOGTAG, uri.getPath());
 		}
 		
-		files = convertUris(uris);
+		files = convertUris(uris);		// convert uris to absolute paths 
+		Collections.sort(files);		// and sort them
 		
 //		  // Figure out what to do based on the intent type
 //	    if (intent.getType().indexOf("image/") != -1) {

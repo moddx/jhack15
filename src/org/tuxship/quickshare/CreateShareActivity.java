@@ -25,7 +25,6 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 
 public class CreateShareActivity extends Activity {
 
@@ -106,7 +105,8 @@ public class CreateShareActivity extends Activity {
 	@Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unbind from the service
+        
+        // Unbind from the DAO
         if (dbBound) {
             unbindService(mConnection);
             dbBound = false;

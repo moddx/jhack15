@@ -166,12 +166,18 @@ public class CreateShareActivity extends Activity {
 			}
 		});
 		
+		ArrayList<String> fileNames = new ArrayList<String>(files.size());
+		for(String f : files) {
+			String[] parts = f.split("/");
+			fileNames.add(parts[parts.length - 1]);
+		}
+		
 		FileListFragment fileListFragment = (FileListFragment) getFragmentManager().
 				findFragmentById(R.id.fileListFragment); 
 		fileListFragment.setListAdapter(new ArrayAdapter<String>(
 				CreateShareActivity.this, 
 				android.R.layout.simple_selectable_list_item, 
-				files));
+				fileNames));
 	}
 	
 	

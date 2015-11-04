@@ -28,19 +28,22 @@ import android.util.Log;
  */
 public abstract class DAOService extends Service {
 
+	protected static final String LOGTAG = "DAOService";
+	
 	// Binder given to clients
     protected final IBinder binder = new LocalBinder();
     
     
     @Override
     public void onCreate() {
-    	Log.i("@string/logtag", "Creating DAOService..");
+    	Log.i(LOGTAG, "Creating DAOService..");
     	super.onCreate();
     }
     
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+    	super.onStartCommand(intent, flags, startId);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
@@ -51,8 +54,8 @@ public abstract class DAOService extends Service {
 	public IBinder onBind(Intent intent) {
 		return binder;
 	}
-	
 
+	
 	/**
 	 * Binder implementation that allows to bind to this service.
 	 */

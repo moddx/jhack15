@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.tuxship.filebrowser.FileBrowserActivity;
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
-import org.tuxship.quickshare.web.Httpd;
 import org.tuxship.quickshare.dao.JsonDAO;
+import org.tuxship.quickshare.web.Httpd;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;

@@ -11,9 +11,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -160,20 +162,64 @@ public class CreateShareActivity extends Activity {
 		});
 	}
 	
+	
 	/*
 	 * Converts a list of Uri's to a list of Strings with the absolute path of the files.
 	 * 
+	 * Also retrieves absolute paths of content:// - Uris
+	 * 
 	 * Uses the Uri.getPath() method.
 	 */
-	private static ArrayList<String> convertUris(ArrayList<Uri> uris) {
+	private ArrayList<String> convertUris(ArrayList<Uri> uris) {
 		ArrayList<String> paths = new ArrayList<String>();
 		
 		for(Uri uri : uris) {
-			paths.add(uri.getPath());
+			/*
+			 * Handle content:// Uris for media files
+			 */
+			if(uri.toString().startsWith("content://")) {
+				String[] parts = uri.getPath().split("/");		// e.g. "/external/audio/media/5552"
+				
+				String projection = null;
+				if(parts[2].equals("audio"))
+					projection = MediaStore.Audio.Media.DATA;
+				else if(parts[2].equals("images"))
+					projection = MediaStore.Images.Media.DATA;
+				else if(parts[2].equals("video"))
+					projection = MediaStore.Video.Media.DATA;
+				else {
+					Log.e("Creating Share", "Could not determine projection for '" + uri.toString() +
+							"' upon trying to convert it to an absolute path.\n Skipping.");
+					continue;
+				}
+				
+				paths.add(getRealPathFromURI(CreateShareActivity.this, uri, projection));
+			} else
+				paths.add(uri.getPath());
 		}
+		
+		Log.d("Creating Share", "List of files to add: " + paths);
 		
 		return paths;
 	}
+	
+	
+	@SuppressWarnings("static-method")
+	private String getRealPathFromURI(Context context, Uri contentUri, String projection) {
+		Cursor cursor = null;
+		try {
+			String[] projArr = { projection };
+			cursor = context.getContentResolver().query(contentUri,  projArr, null, null, null);
+			int column_index = cursor.getColumnIndexOrThrow(projection);
+			cursor.moveToFirst();
+			return cursor.getString(column_index);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+	}
+	
 	
 	/** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {

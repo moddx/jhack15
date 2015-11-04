@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -54,6 +55,16 @@ public class ShareDetailsActivity extends Activity {
 				startActivity(intent);
             }
         });
+		
+		/*
+		 * Setup file list fragment
+		 */
+//		FileListFragment fileListFragment = (FileListFragment) getFragmentManager().
+//				findFragmentById(R.id.fileListFragment); 
+//		fileListFragment.setListAdapter(new ArrayAdapter<String>(
+//				CreateShareActivity.this, 
+//				android.R.layout.simple_selectable_list_item, 
+//				files));
 	}
 	
 	@Override

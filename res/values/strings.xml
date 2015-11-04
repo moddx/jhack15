@@ -15,5 +15,7 @@
     <string name="token_heading">Access Token:</string>
     <string name="action_add_share">Add Share</string>
     <string name="logtagdb">DAOService</string>
+    <string name="create">Create</string>
+    <string name="share_name_hint">share name</string>
 
 </resources>

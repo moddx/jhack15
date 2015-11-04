@@ -22,8 +22,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 
 public class CreateShareActivity extends Activity {
 
@@ -163,6 +165,13 @@ public class CreateShareActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		
+		FileListFragment fileListFragment = (FileListFragment) getFragmentManager().
+				findFragmentById(R.id.fileListFragment); 
+		fileListFragment.setListAdapter(new ArrayAdapter<String>(
+				CreateShareActivity.this, 
+				android.R.layout.simple_selectable_list_item, 
+				files));
 	}
 	
 	

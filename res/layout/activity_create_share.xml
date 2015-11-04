@@ -12,7 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:dividerPadding="@dimen/activity_horizontal_margin"
@@ -34,18 +36,28 @@
                 android:id="@+id/shareNameInput"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:hint="@string/share_name_hint"
                 android:ems="10" />
+                <!-- android:layout_weight="1" -->
+                
 
             <Button
                 android:id="@+id/submitBtn"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Create" />
+                android:text="@string/create" />
+            	<!-- android:layout_weight="1" -->
 
         </LinearLayout>
+
+        <fragment
+            class="org.tuxship.quickshare.FileListFragment"
+            android:id="@+id/fileListFragment"
+            android:name="org.tuxship.quickshare.FileListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

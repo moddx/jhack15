@@ -1,6 +1,6 @@
 ##Things to implement and ideas
 
-* File list Fragment that is shown in the ShareDetailsActivity and CreateShareActivity (maybe even with the option to delete single files)
+* make the FileListFragment neat
 * add a 'Select All' Button in the filebrowser
 * Enable sharing of text and display it accordingly on the webinterface
 * Therefore improve the web interface with some nice javascript

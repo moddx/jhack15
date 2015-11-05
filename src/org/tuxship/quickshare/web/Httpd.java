@@ -9,9 +9,10 @@ import java.util.Map;
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
+import org.tuxship.quickshare.dao.DAOServiceProvider;
+import org.tuxship.quickshare.dao.JsonDAO;
 import org.tuxship.quickshare.web.content.BetterWebContent;
 import org.tuxship.quickshare.web.content.IWebContent;
-import org.tuxship.quickshare.dao.JsonDAO;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -45,10 +46,10 @@ public class Httpd extends Service
     	/*
 		 * Start database server
 		 */
-		startService(new Intent(this, JsonDAO.class));
+    	Intent dbIntent = new Intent(this, DAOServiceProvider.SERVICE);
+		startService(new Intent(this, DAOServiceProvider.SERVICE));
     	
     	// Bind to dbService
-        Intent dbIntent = new Intent(this, JsonDAO.class);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
     	
         server = new WebServer();

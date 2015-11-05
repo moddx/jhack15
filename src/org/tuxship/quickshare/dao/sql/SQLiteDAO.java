@@ -14,7 +14,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-public class SQLiteDAO extends DAOService  {
+public class SQLiteDAO extends DAOService {
 
 	SQLHelper sqlHelper = new SQLHelper(SQLiteDAO.this);
 

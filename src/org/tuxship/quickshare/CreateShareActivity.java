@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
+import org.tuxship.quickshare.dao.DAOServiceProvider;
 import org.tuxship.quickshare.dao.JsonDAO;
 
 import android.app.Activity;
@@ -45,7 +46,7 @@ public class CreateShareActivity extends Activity {
 		setContentView(R.layout.activity_create_share);
 		
         // Bind to Database
-        Intent dbIntent = new Intent(this, JsonDAO.class);
+        Intent dbIntent = new Intent(this, DAOServiceProvider.SERVICE);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
 		
 		Intent intent = getIntent();

@@ -11,6 +11,7 @@ import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.JsonDAO;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
+import org.tuxship.quickshare.dao.DAOServiceProvider;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -64,7 +65,7 @@ public class ShareDetailsActivity extends Activity {
 		super.onStart();
 		
 		// Bind to Database
-        Intent dbIntent = new Intent(this, JsonDAO.class);
+        Intent dbIntent = new Intent(this, DAOServiceProvider.SERVICE);
         startService(dbIntent);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
 	}
@@ -91,7 +92,7 @@ public class ShareDetailsActivity extends Activity {
 		
 		// Bind to Database
 		if(!dbBound) {
-	        Intent dbIntent = new Intent(this, JsonDAO.class);
+	        Intent dbIntent = new Intent(this, DAOServiceProvider.SERVICE);
 	        bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
 		}
 	}

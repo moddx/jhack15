@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.tuxship.filebrowser.FileBrowserActivity;
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
-import org.tuxship.quickshare.dao.JsonDAO;
+import org.tuxship.quickshare.dao.DAOServiceProvider;
 import org.tuxship.quickshare.web.Httpd;
 
 import android.app.Activity;
@@ -78,7 +78,7 @@ public class ShareOverviewActivity extends Activity {
 		/*
 		 * Start database server
 		 */
-		startService(new Intent(this, JsonDAO.class));
+		startService(new Intent(this, DAOServiceProvider.SERVICE));
 		
 		/*
 		 * Start web server
@@ -101,7 +101,7 @@ public class ShareOverviewActivity extends Activity {
 		/*
 		 * Bind to database
 		 */
-        Intent dbIntent = new Intent(this, JsonDAO.class);
+        Intent dbIntent = new Intent(this, DAOServiceProvider.SERVICE);
         bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
         
         updateRunnable.run();	// ensure that list is really updated

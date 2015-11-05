@@ -28,10 +28,6 @@ public class SQLHelper extends SQLiteOpenHelper {
 					FilesTable.COLUMN_FILE + TEXT_TYPE + COMMA_SEP +
 					" )";
 
-	private static final String SQL_DELETE_ENTRIES =
-	    "DROP TABLE IF EXISTS " + ShareTable.TABLE_NAME;
-	
-	
 	// If you change the database schema, you must increment the database version.
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "Shares.db";

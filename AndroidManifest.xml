@@ -22,14 +22,14 @@
             android:name="org.tuxship.quickshare.web.Httpd"
             android:enabled="true" >
         </service>
-        <!-- <service
+        <service
             android:name="org.tuxship.quickshare.dao.JsonDAO"
             android:enabled="true" >
-        </service> -->
-        <service
+        </service>
+        <!-- <service
             android:name="org.tuxship.quickshare.dao.sql.SQLiteDAO"
             android:enabled="true" >
-        </service>
+        </service> -->
 
         <activity
             android:name=".ShareOverviewActivity"

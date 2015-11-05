@@ -8,7 +8,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import org.tuxship.quickshare.dao.DAOService;
-import org.tuxship.quickshare.dao.JsonDAO;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 import org.tuxship.quickshare.dao.DAOServiceProvider;

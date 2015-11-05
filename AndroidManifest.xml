@@ -22,11 +22,14 @@
             android:name="org.tuxship.quickshare.web.Httpd"
             android:enabled="true" >
         </service>
-        <service
+        <!-- <service
             android:name="org.tuxship.quickshare.dao.JsonDAO"
             android:enabled="true" >
+        </service> -->
+        <service
+            android:name="org.tuxship.quickshare.dao.SQLiteDAO"
+            android:enabled="true" >
         </service>
-        
 
         <activity
             android:name=".ShareOverviewActivity"
@@ -72,6 +75,8 @@
             android:configChanges="orientation|keyboardHidden" >
             <intent-filter>
                 <action android:name="ua.com.vassiliev.androidfilebrowser.SELECT_DIRECTORY_ACTION"></action>
+                <action android:name="ua.com.vassiliev.androidfilebrowser.SELECT_FILE_ACTION"></action>
+                <action android:name="ua.com.vassiliev.androidfilebrowser.SELECT_FILE_MULTIPLE_ACTION"></action>
             </intent-filter>
 		</activity>
         

@@ -6,7 +6,7 @@ import java.util.Collections;
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.DAOServiceProvider;
-import org.tuxship.quickshare.dao.JsonDAO;
+import org.tuxship.quickshare.dao.sql.SQLiteDAO;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -103,6 +103,26 @@ public class CreateShareActivity extends Activity {
 		setup();
 	}
 
+	@Override
+    protected void onResume() {
+        super.onResume();
+        
+        // Bind to Database
+        Intent dbIntent = new Intent(this, DAOServiceProvider.SERVICE);
+        bindService(dbIntent, mConnection, Context.BIND_AUTO_CREATE);
+	}
+	
+	@Override
+    protected void onPause() {
+        super.onPause();
+        
+        // Unbind from the DAO
+        if (dbBound) {
+            unbindService(mConnection);
+            dbBound = false;
+        }
+    }
+	
 	@Override
     protected void onDestroy() {
         super.onDestroy();

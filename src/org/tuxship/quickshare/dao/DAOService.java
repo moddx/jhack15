@@ -35,14 +35,14 @@ public abstract class DAOService extends Service {
     
     
     @Override
-    public void onCreate() {
+    public final void onCreate() {
     	Log.i(LOGTAG, "Creating DAOService..");
     	super.onCreate();
     }
     
     
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public final int onStartCommand(Intent intent, int flags, int startId) {
     	super.onStartCommand(intent, flags, startId);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
@@ -51,7 +51,7 @@ public abstract class DAOService extends Service {
 
     
 	@Override
-	public IBinder onBind(Intent intent) {
+	public final IBinder onBind(Intent intent) {
 		return binder;
 	}
 
@@ -59,7 +59,7 @@ public abstract class DAOService extends Service {
 	/**
 	 * Binder implementation that allows to bind to this service.
 	 */
-	public class LocalBinder extends Binder {
+	public final class LocalBinder extends Binder {
 		public DAOService getService() {
 			return DAOService.this;
 		}
@@ -118,10 +118,11 @@ public abstract class DAOService extends Service {
 	 */
 	public abstract String getToken(String share) throws ShareNotFoundException;
 	
+	
 	/**
 	 * Thrown when a share name, passed as a parameter, does not exist.
 	 */
-	public class ShareNotFoundException extends Exception {
+	public final class ShareNotFoundException extends Exception {
 		/**
 		 * Generated serialVersionUID
 		 */
@@ -137,11 +138,11 @@ public abstract class DAOService extends Service {
 	/**
 	 * Thrown when a token, passed as a parameter, does not exist.
 	 */
-	public class TokenNotFoundException extends Exception {
+	public final class TokenNotFoundException extends Exception {
 		/**
 		 * Generated serialVersionUID
 		 */
-		private static final long serialVersionUID = -6940677985750749370L;
+		private static final long serialVersionUID = 3753580994362735631L;
 		
 		public TokenNotFoundException() {}
 		

@@ -27,7 +27,7 @@
             android:enabled="true" >
         </service> -->
         <service
-            android:name="org.tuxship.quickshare.dao.SQLiteDAO"
+            android:name="org.tuxship.quickshare.dao.sql.SQLiteDAO"
             android:enabled="true" >
         </service>
 

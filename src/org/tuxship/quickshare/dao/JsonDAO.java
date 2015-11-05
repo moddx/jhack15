@@ -266,7 +266,7 @@ public class JsonDAO extends DAOService {
 
 	private void initFile() {
 		try {
-			FileOutputStream fos = getApplication().getApplicationContext().openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			FileOutputStream fos = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
 			fos.write(("{\"" + SHARE_DB + "\": []}").getBytes());
 			fos.close();
 		} catch (Exception e) {
@@ -276,8 +276,7 @@ public class JsonDAO extends DAOService {
 	
 	private boolean saveJSON(JSONObject obj){
 		try {
-			FileOutputStream fOut = getApplication().getApplicationContext()
-					.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			FileOutputStream fOut = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
 
 			fOut.write(obj.toString().getBytes());
 			fOut.close();
@@ -296,8 +295,7 @@ public class JsonDAO extends DAOService {
 		String result = "";
 
 		try {
-			FileInputStream fIn = getApplication().getApplicationContext()
-					.openFileInput(FILENAME);
+			FileInputStream fIn = this.openFileInput(FILENAME);
 			BufferedInputStream bIn = new BufferedInputStream(fIn);
 			Scanner scan = new Scanner(bIn);
 			

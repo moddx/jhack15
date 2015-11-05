@@ -2,11 +2,13 @@ package org.tuxship.quickshare.dao;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -361,14 +363,13 @@ public class JsonDAO extends DAOService {
 	private boolean saveJSON(JSONObject obj){
 		try {
 			FileOutputStream fOut = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-
 			fOut.write(obj.toString().getBytes());
 			fOut.close();
 		} catch(FileNotFoundException e){
-			Log.e("@string/logtagdb", "Can not store jsonDB. FileNotFoundException");
+			Log.e(LOGTAG, "Can not store jsonDB. FileNotFoundException");
 			return false;
 		} catch(IOException e){
-			Log.e("@string/logtagdb", "Can not store jsonDB. IOException");
+			Log.e(LOGTAG, "Can not store jsonDB. IOException");
 			return false;
 		}
 		
@@ -376,29 +377,32 @@ public class JsonDAO extends DAOService {
 	}
 
 	private JSONObject loadJSON(){
-		String result = "";
+		StringBuilder data = new StringBuilder();
 
 		try {
 			FileInputStream fIn = this.openFileInput(FILENAME);
-			BufferedInputStream bIn = new BufferedInputStream(fIn);
-			Scanner scan = new Scanner(bIn);
+			InputStreamReader iReader = new InputStreamReader(fIn, "UTF-8");
+			BufferedReader bReader = new BufferedReader(iReader);
 			
-			while(scan.hasNext()) {
-				result += scan.next();
+			String line;
+			while((line = bReader.readLine()) != null) {
+				data.append(line);
 			}
 			
-			scan.close();
+			bReader.close();
 		} catch(FileNotFoundException e){
 			initFile();
 			return loadJSON();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		JSONObject jsonIn = new JSONObject();
 		
 		try {
-			jsonIn = new JSONObject(result);
+			jsonIn = new JSONObject(data.toString());
 		} catch (JSONException e) {
-			Log.w("dataout", "could not create jsonobject from loaded data");
+			Log.w(LOGTAG, "could not create jsonobject from loaded data");
 			e.printStackTrace();
 		}
 

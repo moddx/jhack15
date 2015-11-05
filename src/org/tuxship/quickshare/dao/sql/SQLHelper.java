@@ -18,14 +18,14 @@ public class SQLHelper extends SQLiteOpenHelper {
 			"CREATE TABLE " + ShareTable.TABLE_NAME + " (" +
 					ShareTable._ID + " INTEGER PRIMARY KEY," +
 					ShareTable.COLUMN_SHARE_NAME + TEXT_TYPE + COMMA_SEP +
-					ShareTable.COLUMN_SHARE_TOKEN + TEXT_TYPE + COMMA_SEP +
+					ShareTable.COLUMN_SHARE_TOKEN + TEXT_TYPE +
 					" )";
 	
 	private static final String SQL_CREATE_FILES_TABLE =
 			"CREATE TABLE " + FilesTable.TABLE_NAME + " (" +
 					FilesTable._ID + " INTEGER PRIMARY KEY," +
 					FilesTable.COLUMN_SHARE_NAME + TEXT_TYPE + COMMA_SEP +
-					FilesTable.COLUMN_FILE + TEXT_TYPE + COMMA_SEP +
+					FilesTable.COLUMN_FILE + TEXT_TYPE +
 					" )";
 
 	// If you change the database schema, you must increment the database version.

@@ -2,6 +2,7 @@ package org.tuxship.quickshare.dao;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,6 +23,7 @@ import android.util.Log;
 
 public class JsonDAO extends DAOService {
 	public static final String FILENAME = "token_database";
+	public static final String BACKUPFILE = "token_database.bak";
 
 	public static final int tokenLength = 6;
 	
@@ -135,6 +137,88 @@ public class JsonDAO extends DAOService {
 		throw new ShareNotFoundException("No share with the name '" + shareName + "'!");
 	}
 
+	public int getShareCount() {
+		if(jsonDB == null)
+			jsonDB = loadJSON();
+		
+		JSONArray db = null;
+		try {
+			db = jsonDB.getJSONArray(SHARE_DB);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return db.length();
+	}
+	
+	/**
+	 * Backs up the current active database file in the backup file.
+	 * <p>
+	 * Only use in Unit Tests! Don't forget to restore() after testing.
+	 * 
+	 * @return true on success, false on errors
+	 */
+	public boolean backupAndClear() {
+		if(!new File(FILENAME).exists())
+			return false;
+		
+		if(!copyFile(FILENAME, BACKUPFILE))
+			return false;
+		
+		initFile();
+		return true;
+	}
+
+	/**
+	 * Restores the database from the backup file.
+	 * <p>
+	 * <b>BEWARE: POTENTIAL LOSS OF DATA</b>
+	 * This replaces the current database file.
+	 * <p>
+	 * Only use in Unit Tests!
+	 * 
+	 * @return true on success, false on errors 
+	 */
+	public boolean restore() {
+		if(!new File(BACKUPFILE).exists())
+			return false;
+		
+		return copyFile(BACKUPFILE, FILENAME);
+	}
+	
+	/**
+	 * Copies a file from A to B.
+	 * 
+	 * @param sourcePath	The file to copy
+	 * @param targetPath	The copy destination
+	 * @return				true on success, false on errors
+	 */
+	private boolean copyFile(String sourcePath, String targetPath) {
+		try {
+			FileInputStream fIn = this.openFileInput(sourcePath);
+			BufferedInputStream bIn = new BufferedInputStream(fIn);
+			FileOutputStream fOut = this.openFileOutput(targetPath, Context.MODE_PRIVATE);
+			BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+			
+			while(true) {
+				byte[] buffer = new byte[1024]; 
+				int bytesRead = bIn.read(buffer);
+				bOut.write(buffer);
+			
+				if(bytesRead == -1)
+					break;
+			}
+			
+			bIn.close();	
+			bOut.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public void dumpJSON() {
 		if(jsonDB == null)
 			jsonDB = loadJSON();

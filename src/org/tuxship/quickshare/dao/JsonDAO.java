@@ -80,6 +80,7 @@ public class JsonDAO extends DAOService {
 				shares.add(db.getJSONObject(i).get(SHARE_NAME).toString());
 			}
 		} catch (JSONException e) {
+			Log.w(LOGTAG, "JSONException on getShares. This can happen when there are no shares yet.");
 			// Empty database.
 			// Return empty list.
 		}		
@@ -161,9 +162,10 @@ public class JsonDAO extends DAOService {
 	 * @return true on success, false on errors
 	 */
 	public boolean backupAndClear() {
-		if(!new File(FILENAME).exists())
-			return false;
-		
+		if(!getBaseContext().getFileStreamPath(FILENAME).exists()) {
+			initFile();
+		}
+			
 		if(!copyFile(FILENAME, BACKUPFILE))
 			return false;
 		
@@ -182,10 +184,15 @@ public class JsonDAO extends DAOService {
 	 * @return true on success, false on errors 
 	 */
 	public boolean restore() {
-		if(!new File(BACKUPFILE).exists())
+		if(!getBaseContext().getFileStreamPath(BACKUPFILE).exists()) {
+			return false;
+		}
+		
+		if(!copyFile(BACKUPFILE, FILENAME))
 			return false;
 		
-		return copyFile(BACKUPFILE, FILENAME);
+		jsonDB = null;		// need to re-read database
+		return true;
 	}
 	
 	/**
@@ -352,9 +359,11 @@ public class JsonDAO extends DAOService {
 
 	private void initFile() {
 		try {
-			FileOutputStream fos = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			fos.write(("{\"" + SHARE_DB + "\": []}").getBytes());
-			fos.close();
+			FileOutputStream fOut = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			fOut.write(("{\"" + SHARE_DB + "\": []}").getBytes());
+			fOut.close();
+			
+			jsonDB = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

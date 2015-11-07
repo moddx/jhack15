@@ -10,7 +10,6 @@ import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 import org.tuxship.quickshare.dao.DAOServiceProvider;
-import org.tuxship.quickshare.dao.JsonDAO;
 import org.tuxship.quickshare.web.content.BetterWebContent;
 import org.tuxship.quickshare.web.content.IWebContent;
 
@@ -115,7 +114,7 @@ public class Httpd extends Service
 	        	 * Check token
 	        	 */
 	        	String token = parms.get(GET_TOKEN);
-	        	if(!token.matches("[[a-f][0-9]]{" + JsonDAO.tokenLength + "}"))
+	        	if(!token.matches("[[a-f][0-9]]{" + DAOService.TOKEN_LENGTH + "}"))
 	        		return serveNormal(session, "Illegal token parameter");
 	        	
 	        	/*

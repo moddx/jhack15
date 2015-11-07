@@ -24,11 +24,9 @@ import android.os.Build;
 import android.util.Log;
 
 public class JsonDAO extends DAOService {
-	public static final String FILENAME = "token_database";
-	public static final String BACKUPFILE = "token_database.bak";
+	private static final String FILENAME = "token_database";
+	private static final String BACKUPFILE = "token_database.bak";
 
-	public static final int tokenLength = 6;
-	
 	private static final String SHARE_DB = "db";
 	private static final String SHARE_TOKEN = "key";
 	private static final String SHARE_NAME = "name";
@@ -89,7 +87,7 @@ public class JsonDAO extends DAOService {
 	}
 
 	@Override
-	public List<String> getFiles(String token) throws TokenNotFoundException {
+	public List<String> getFiles(String identifier, int type) throws TokenNotFoundException, ShareNotFoundException {
 		List<String> files = new ArrayList<String>();
 		
 		if(jsonDB == null)
@@ -101,7 +99,7 @@ public class JsonDAO extends DAOService {
 			for(int i = 0; i < db.length(); i++){
 				JSONObject share = (JSONObject) db.get(i);
 				
-				if(share.get(SHARE_TOKEN).equals(token)){
+				if(share.get( (type == TYPE_SHARENAME) ? SHARE_NAME : SHARE_TOKEN).equals(identifier)){
 					JSONArray jsonFiles = share.getJSONArray(SHARE_FILES);
 					
 					for(int j = 0; j < jsonFiles.length(); j++){
@@ -116,7 +114,10 @@ public class JsonDAO extends DAOService {
 			e.printStackTrace();
 		}
 		
-		throw new TokenNotFoundException("Token '" + token + "' does not exist.");
+		if(type == TYPE_SHARENAME)
+			throw new ShareNotFoundException("Share '" + identifier + "' does not exist.");
+		else
+			throw new TokenNotFoundException("Token '" + identifier + "' does not exist.");
 	}
 	
 	@Override
@@ -140,6 +141,11 @@ public class JsonDAO extends DAOService {
 		throw new ShareNotFoundException("No share with the name '" + shareName + "'!");
 	}
 
+	/**
+	 * Returns the count of the stored shares.
+	 * 
+	 * @return the share count
+	 */
 	public int getShareCount() {
 		if(jsonDB == null)
 			jsonDB = loadJSON();
@@ -257,7 +263,7 @@ public class JsonDAO extends DAOService {
 			e.printStackTrace();
 		}
 
-		return result.substring(result.length() - tokenLength);
+		return result.substring(result.length() - DAOService.TOKEN_LENGTH);
 	}
 
 	private void addtoJSON(String name, String key, JSONArray files){

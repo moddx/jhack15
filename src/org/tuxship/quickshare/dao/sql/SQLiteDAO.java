@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tuxship.quickshare.dao.DAOService;
-import org.tuxship.quickshare.dao.JsonDAO;
 import org.tuxship.quickshare.dao.sql.SQLContract.FilesTable;
 import org.tuxship.quickshare.dao.sql.SQLContract.ShareTable;
 
@@ -231,7 +230,7 @@ public class SQLiteDAO extends DAOService {
 			e.printStackTrace();
 		}
 
-		return result.substring(result.length() - JsonDAO.tokenLength);
+		return result.substring(result.length() - DAOService.TOKEN_LENGTH);
 	}
 
 }

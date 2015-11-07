@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.tuxship.quickshare.dao.DAOService;
+import org.tuxship.quickshare.dao.DAOService.ShareNotFoundException;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 import org.tuxship.quickshare.web.Httpd;
 
@@ -76,7 +77,7 @@ public class BetterWebContent implements IWebContent {
 			try {
 				list.append("<ul id='files'>\n");
 				List<String> files;
-				files = dbService.getFiles(token);		// this could throw the exception
+				files = dbService.getFiles(token, DAOService.TYPE_TOKEN);		// this could throw the exception
 				
 				int fileIndex = 0;
 				for (String f : files) {
@@ -90,7 +91,7 @@ public class BetterWebContent implements IWebContent {
 				}
 				
 				list.append("</ul>\n");
-			} catch (TokenNotFoundException e) {
+			} catch (TokenNotFoundException | ShareNotFoundException e) {
 				Log.w("@string/logtagdb", "Request for token '" + token + "' failed. Token does not exist.");
 				list.append("<p style='text-color: red;'>Invalid Token!</p>");
 			}

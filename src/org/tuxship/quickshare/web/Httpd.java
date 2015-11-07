@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
+import org.tuxship.quickshare.dao.DAOService.ShareNotFoundException;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 import org.tuxship.quickshare.dao.DAOServiceProvider;
 import org.tuxship.quickshare.web.content.BetterWebContent;
@@ -123,8 +124,8 @@ public class Httpd extends Service
 	        	List<String> files = null;
 	        	if(dbBound) {
 	        		try {
-						files = dbService.getFiles(token);
-					} catch (TokenNotFoundException e) {
+						files = dbService.getFiles(token, DAOService.TYPE_TOKEN);
+					} catch (TokenNotFoundException | ShareNotFoundException e) {
 						e.printStackTrace();
 					}
 	        	} else

@@ -123,8 +123,9 @@ public class SQLiteDAO extends DAOService {
 	}
 
 	@Override
-	public List<String> getFiles(String token) throws TokenNotFoundException {
-		final String share = getShareName(token);
+	public List<String> getFiles(String identifier, int type) throws TokenNotFoundException {
+		if(type == TYPE_TOKEN)
+			identifier = getShareName(identifier);
 		
 		SQLiteDatabase db = sqlHelper.getReadableDatabase();
 
@@ -134,7 +135,7 @@ public class SQLiteDAO extends DAOService {
 				FilesTable.TABLE_NAME,
 				projection,
 				"? LIKE ?",
-				new String[] { FilesTable.COLUMN_SHARE_NAME, share },
+				new String[] { FilesTable.COLUMN_SHARE_NAME, identifier },
 				null,
 				null,
 				null);

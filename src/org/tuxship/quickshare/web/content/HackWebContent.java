@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.tuxship.quickshare.dao.DAOService;
+import org.tuxship.quickshare.dao.DAOService.ShareNotFoundException;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 
 import android.content.Context;
@@ -89,8 +90,8 @@ public class HackWebContent implements IWebContent {
             
         	List<String> files;
 			try {
-				files = dbService.getFiles(parms.get("accessToken"));
-			} catch (TokenNotFoundException e) {
+				files = dbService.getFiles(parms.get("accessToken"), DAOService.TYPE_TOKEN);
+			} catch (TokenNotFoundException | ShareNotFoundException e) {
 				files = new ArrayList<String>();
 				files.add("Token does not exist!");
 			}

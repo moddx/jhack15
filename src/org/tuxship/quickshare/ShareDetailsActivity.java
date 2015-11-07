@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import org.tuxship.quickshare.dao.DAOService;
 import org.tuxship.quickshare.dao.DAOService.LocalBinder;
+import org.tuxship.quickshare.dao.DAOService.ShareNotFoundException;
 import org.tuxship.quickshare.dao.DAOService.TokenNotFoundException;
 import org.tuxship.quickshare.dao.DAOServiceProvider;
 
@@ -180,12 +181,12 @@ public class ShareDetailsActivity extends Activity {
 		
 		if(dbBound) {
 			try {
-				files = new ArrayList<String>(dbService.getFiles(token));
+				files = new ArrayList<String>(dbService.getFiles(token, DAOService.TYPE_TOKEN));
 				for(int i = 0; i < files.size(); i++) {			// only keep filenames without path
 					String[] parts = files.remove(i).split("/");
 					files.add(i, parts[parts.length - 1]);
 				}
-			} catch (TokenNotFoundException e) {
+			} catch (TokenNotFoundException | ShareNotFoundException e) {
 				Toast.makeText(ShareDetailsActivity.this, "Token not found in DB", Toast.LENGTH_LONG).show();;
 				Log.e(LOGTAG, "Token '" + token + "' not found in DB.");
 			}

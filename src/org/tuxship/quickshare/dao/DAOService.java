@@ -27,13 +27,16 @@ import android.util.Log;
  *
  */
 public abstract class DAOService extends Service {
-
+	
+	public static final int TOKEN_LENGTH = 6;
+	public static final int TYPE_TOKEN = 0;
+	public static final int TYPE_SHARENAME = 1;
+	
 	protected static final String LOGTAG = "DAOService";
 	
 	// Binder given to clients
     protected final IBinder binder = new LocalBinder();
-    
-    
+
     @Override
     public final void onCreate() {
     	Log.i(LOGTAG, "Creating DAOService..");
@@ -99,17 +102,22 @@ public abstract class DAOService extends Service {
 
 	
 	/**
-	 * Returns a list of files that correspond to a token.
+	 * Returns a list of files that correspond to an identifier.
+	 * <p>
+	 * The identifier can either be an access token or the name of a share.
+	 * The type of the identifier needs to be passed as well.
+	 * This can either be {@code DAOService.TYPE_TOKEN} or {@code DAOService.TYPE_SHARENAME}.
 	 * 
-	 * @param token	the access token
+	 * @param identifier 	can either be an access token or the name of a share
+	 * @param type 			the type of the identifier
 	 * @return	the files that are stored with this token 
 	 */
-	public abstract List<String> getFiles(String token) throws TokenNotFoundException;
+	public abstract List<String> getFiles(String identifier, int type) throws TokenNotFoundException, ShareNotFoundException;
 
 	
 	/**
-	 * Returns the token that grantss access to a share.
-	 * 
+	 * Returns the token that grants access to a share.
+	 * <p>
 	 * Each share has a unique token. It may be derived
 	 * partly or fully from the files of a share. 
 	 * 

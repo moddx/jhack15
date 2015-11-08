@@ -36,6 +36,11 @@ public class JsonDAO extends DAOService {
 
 	@Override
 	public String addShare(String name, List<String> files) {
+		if(files.isEmpty() || name.equals("")) {
+			Log.e(LOGTAG, "No sharename provided or empty file list, on adding a share.");
+			return "";
+		}
+		
 		/*
 		 * jsonify and create token
 		 */

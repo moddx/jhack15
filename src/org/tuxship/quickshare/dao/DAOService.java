@@ -71,12 +71,14 @@ public abstract class DAOService extends Service {
 	
     /**
      * Adds a share to the database
-     * 
+     * <p>
      * Returns a token that allows to access the share from the webservice
      * or other future frontends.
+     * <p>
+     * The share name and the file list both may not be empty.
      * 
-     * @param name	the name of the share
-     * @param files  the files to share
+     * @param name 	the name of the share
+     * @param files the files to share
      * @return the access token
      */
 	public abstract String addShare(String name, List<String> files);

@@ -10,17 +10,31 @@ import org.tuxship.quickshare.dao.sql.SQLContract.ShareTable;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class SQLiteDAO extends DAOService {
 
 	SQLHelper sqlHelper = new SQLHelper(SQLiteDAO.this);
+	
+	private String SHARE_TABLE_NAME = ShareTable.TABLE_NAME;
+	private String FILES_TABLE_NAME = FilesTable.TABLE_NAME;
 
 	@Override
 	public String addShare(String name, List<String> files) {
+		if(files.isEmpty() || name.equals("")) {
+			Log.e(LOGTAG, "No sharename provided or empty file list, on adding a share.");
+			return "";
+		}
+		
 		SQLiteDatabase db = sqlHelper.getWritableDatabase();
-
+		
+		if(containsShare(db, name)) {
+			Log.w(LOGTAG, "Won't add a share with a duplicate name");
+			return "";
+		}
+		
 		String token = createToken(files);
 
 		/*
@@ -30,7 +44,7 @@ public class SQLiteDAO extends DAOService {
 		shareValues.put(ShareTable.COLUMN_SHARE_NAME, name);
 		shareValues.put(ShareTable.COLUMN_SHARE_TOKEN, token);
 
-		db.insert(ShareTable.TABLE_NAME, null, shareValues);
+		db.insert(SHARE_TABLE_NAME, null, shareValues);
 
 		/*
 		 * Store files that belong to the share
@@ -40,7 +54,7 @@ public class SQLiteDAO extends DAOService {
 			fileValues.put(FilesTable.COLUMN_SHARE_NAME, name);
 			fileValues.put(FilesTable.COLUMN_FILE, file);
 
-			db.insert(FilesTable.TABLE_NAME, null, fileValues);
+			db.insert(FILES_TABLE_NAME, null, fileValues);
 		}
 
 		db.close();
@@ -64,7 +78,7 @@ public class SQLiteDAO extends DAOService {
 					share
 			};
 
-			int deleted = db.delete(ShareTable.TABLE_NAME, selection, selectionArgs);
+			int deleted = db.delete(SHARE_TABLE_NAME, selection, selectionArgs);
 
 			if(deleted < 1) success = false;
 		}
@@ -80,7 +94,7 @@ public class SQLiteDAO extends DAOService {
 					share
 			};
 
-			int deleted = db.delete(FilesTable.TABLE_NAME, selection, selectionArgs);
+			int deleted = db.delete(FILES_TABLE_NAME, selection, selectionArgs);
 		
 			if(deleted < 1) success = false;
 		}
@@ -98,7 +112,7 @@ public class SQLiteDAO extends DAOService {
 		String[] projection = { ShareTable.COLUMN_SHARE_NAME };
 
 		Cursor c = db.query(
-				ShareTable.TABLE_NAME,
+				SHARE_TABLE_NAME,
 				projection,
 				null,
 				null,
@@ -121,9 +135,16 @@ public class SQLiteDAO extends DAOService {
 
 		return shares;
 	}
+	
+	@Override
+	public int getShareCount() {
+		SQLiteDatabase db = sqlHelper.getReadableDatabase();
+		
+		return (int) DatabaseUtils.queryNumEntries(db, SHARE_TABLE_NAME);
+	}
 
 	@Override
-	public List<String> getFiles(String identifier, int type) throws TokenNotFoundException {
+	public List<String> getFiles(String identifier, int type) throws TokenNotFoundException, ShareNotFoundException {
 		if(type == TYPE_TOKEN)
 			identifier = getShareName(identifier);
 		
@@ -132,7 +153,7 @@ public class SQLiteDAO extends DAOService {
 		String[] projection = { FilesTable.COLUMN_FILE };
 
 		Cursor c = db.query(
-				FilesTable.TABLE_NAME,
+				FILES_TABLE_NAME,
 				projection,
 				"? LIKE ?",
 				new String[] { FilesTable.COLUMN_SHARE_NAME, identifier },
@@ -161,7 +182,7 @@ public class SQLiteDAO extends DAOService {
 		String[] projection = { ShareTable.COLUMN_SHARE_TOKEN };
 
 		Cursor c = db.query(
-				ShareTable.TABLE_NAME,
+				SHARE_TABLE_NAME,
 				projection,
 				"? = ?",
 				new String[] { ShareTable.COLUMN_SHARE_NAME, share },
@@ -182,13 +203,73 @@ public class SQLiteDAO extends DAOService {
 		return c.getString(c.getColumnIndex(projection[0]));
 	}
 
+	public boolean backupAndClear() {
+		SQLiteDatabase db = sqlHelper.getWritableDatabase();
+		
+		/*
+		 * Create a copy of the tables
+		 */ 
+//		{
+//			String sql = "CREATE OR REPLACE TABLE " + ShareTable.BACKUP_TABLE_NAME +
+//					" AS SELECT * FROM " + ShareTable.TABLE_NAME;
+//			db.execSQL(sql);
+//		}
+		
+		sqlHelper.createCleanBackupTables(db);
+
+		db.close();
+		
+		/*
+		 * Switch to copied tables
+		 */
+		SHARE_TABLE_NAME = ShareTable.BACKUP_TABLE_NAME;
+		FILES_TABLE_NAME = FilesTable.BACKUP_TABLE_NAME;
+		
+		return true;
+	}
+	
+	public boolean restore() {
+		SQLiteDatabase db = sqlHelper.getWritableDatabase();
+		
+		/*
+		 * Remove backup tables
+		 */
+		db.execSQL("DROP TABLE IF EXISTS " + ShareTable.BACKUP_TABLE_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + FilesTable.BACKUP_TABLE_NAME);
+		
+		db.close();
+		
+		/*
+		 * Switch to original tables
+		 */
+		SHARE_TABLE_NAME = ShareTable.TABLE_NAME;
+		FILES_TABLE_NAME = FilesTable.TABLE_NAME;
+		
+		return true;
+	}
+	
+	private boolean containsShare(SQLiteDatabase db, String shareName) {
+		Cursor c = db.query(
+				SHARE_TABLE_NAME,
+				new String[] { ShareTable.COLUMN_SHARE_NAME },
+				"? = ?",
+				new String[] { ShareTable.COLUMN_SHARE_NAME, shareName },
+				null,
+				null,
+				null);
+		boolean contains = c.getCount() >= 1;
+		c.close();
+		
+		return contains;
+	}
+	
 	private String getShareName(String token) throws TokenNotFoundException {
 		SQLiteDatabase db = sqlHelper.getReadableDatabase();
 
 		String[] projection = { ShareTable.COLUMN_SHARE_NAME };
 
 		Cursor c = db.query(
-				ShareTable.TABLE_NAME,
+				SHARE_TABLE_NAME,
 				projection,
 				"? = ?",
 				new String[] { ShareTable.COLUMN_SHARE_TOKEN, token },

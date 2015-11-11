@@ -151,6 +151,7 @@ public class JsonDAO extends DAOService {
 	 * 
 	 * @return the share count
 	 */
+	@Override
 	public int getShareCount() {
 		if(jsonDB == null)
 			jsonDB = loadJSON();

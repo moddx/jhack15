@@ -104,6 +104,13 @@ public abstract class DAOService extends Service {
 
 	
 	/**
+	 * Returns the count of the stored shares.
+	 * 
+	 * @return the share count
+	 */
+	public abstract int getShareCount();
+	
+	/**
 	 * Returns a list of files that correspond to an identifier.
 	 * <p>
 	 * The identifier can either be an access token or the name of a share.
